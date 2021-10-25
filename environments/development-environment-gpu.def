@@ -1,0 +1,43 @@
+BootStrap: docker
+From: nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu20.04
+
+%post
+    export INST='env DEBIAN_FRONTEND=noninteractive apt-get install -y'
+    export PIPINST='python3 -m pip install --no-cache-dir --upgrade'
+
+    apt_wrapper () {
+        apt-get update
+        $INST $@
+        apt-get -y autoremove && apt-get -y clean && rm -rf /var/lib/apt/lists
+        ldconfig
+    }
+
+    apt_wrapper \
+        curl \
+        git \
+        python3 \
+        python3-pip \
+        tmux \
+        vim \
+        wget
+
+    $PIPINST pip setuptools
+    $PIPINST \
+        Jinja2 \
+        cffi \
+        flake8 \
+        ipython \
+        matplotlib \
+        netron \
+        numpy \
+        onnx \
+        opencv-python \
+        ptipython \
+        pytest \
+        scikit-learn \
+        tensorflow \
+        tensorflow-addons \
+        tqdm
+
+    $PIPINST git+https://github.com/onnx/onnx-tensorflow.git@v1.9.0
+    $PIPINST git+https://github.com/onnx/tensorflow-onnx.git@v1.9.2
