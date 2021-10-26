@@ -65,9 +65,9 @@ class ModelTester(object):
 
     def test_inference(
             self,
-            resultspath : Path,
-            prefix : str,
-            testdatasetpercentage : float = 0.3):
+            resultspath: Path,
+            prefix: str,
+            testdatasetpercentage: float = 0.3):
         """
         Runs inference on test data and evaluates the model.
 
@@ -96,7 +96,7 @@ class ModelTester(object):
             # preprocess data
             Xp = self.dataset.prepare_input_sample(X)
             yp = self.dataset.prepare_output_sample(y)
-            prepX = self.preprocess_input(Xp)
+            self.preprocess_input(Xp)
             # run the inference
             preds = self._run_inference()
             posty = self.postprocess_outputs(preds)
@@ -122,7 +122,7 @@ class ModelTester(object):
                 f'* Top-5 percentage: {self.dataset.top_5_count / self.dataset.total}\n'  # noqa: E501
             ])
 
-    def preprocess_input(self, X : Any):
+    def preprocess_input(self, X: Any):
         """
         Preprocesses the inputs so they are usable in the model.
 
@@ -140,7 +140,7 @@ class ModelTester(object):
         """
         raise NotImplementedError
 
-    def postprocess_outputs(self, Y : Optional[Any]) -> np.ndarray:
+    def postprocess_outputs(self, Y: Optional[Any]) -> np.ndarray:
         """
         Postprocesses the outputs and return them in a form of NumPy array.
 
@@ -324,20 +324,49 @@ if __name__ == '__main__':
     # test of the model executed natively
     tester = NativeModel(dataset, args.model_path)
     tester.prepare_model()
-    tester.test_inference(args.results_path, 'native', args.test_dataset_fraction)
+    tester.test_inference(
+        args.results_path,
+        'native',
+        args.test_dataset_fraction
+    )
 
-    # # test of the model executed with FP32 precision
-    # tester = FP32Model(dataset, args.model_path.with_suffix('.fp32.tflite'), args.model_path)
-    # tester.prepare_model()
-    # tester.test_inference(args.results_path, 'tflite-fp32', args.test_dataset_fraction)
+    # test of the model executed with FP32 precision
+    tester = FP32Model(
+        dataset,
+        args.results_path / f'{args.model_path.stem}.fp32.tflite',
+        args.model_path
+    )
+    tester.prepare_model()
+    tester.test_inference(
+        args.results_path,
+        'tflite-fp32',
+        args.test_dataset_fraction
+    )
 
-    # for calibsize in [0.01, 0.08, 0.3, 0.8]:
-    #     # test of the model executed with INT8 precision
-    #     tester = INT8Model(dataset, args.model_path.with_suffix(f'.int8-{calibsize}.tflite'), args.model_path, calibsize)
-    #     tester.prepare_model()
-    #     tester.test_inference(args.results_path, f'tflite-int8-{calibsize}', args.test_dataset_fraction)
+    for calibsize in [0.01, 0.08, 0.3, 0.8]:
+        # test of the model executed with INT8 precision
+        tester = INT8Model(
+            dataset,
+            args.results_path / f'{args.model_path.stem}.int8-{calibsize}.tflite',  # noqa: E501
+            args.model_path,
+            calibsize
+        )
+        tester.prepare_model()
+        tester.test_inference(
+            args.results_path,
+            f'tflite-int8-{calibsize}',
+            args.test_dataset_fraction
+        )
 
-    # # test of the model executed with imbalanced INT8 precision
-    # tester = ImbalancedINT8Model(dataset, args.model_path.with_suffix(f'.imbint8.tflite'), args.model_path)
-    # tester.prepare_model()
-    # tester.test_inference(args.results_path, f'tflite-imbint8', args.test_dataset_fraction)
+    # test of the model executed with imbalanced INT8 precision
+    tester = ImbalancedINT8Model(
+        dataset,
+        args.results_path / f'{args.model_path.stem}.imbint8.tflite',
+        args.model_path
+    )
+    tester.prepare_model()
+    tester.test_inference(
+        args.results_path,
+        'tflite-imbint8',
+        args.test_dataset_fraction
+    )
