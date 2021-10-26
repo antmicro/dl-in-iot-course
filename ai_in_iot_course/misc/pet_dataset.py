@@ -131,10 +131,11 @@ class PetDataset(object):
         """
         return (self.dataX, self.dataY)
 
-    def train_validation_split(
+    def split_dataset(
             self,
             percentage: float = 0.25,
-            seed: int = 12345):
+            seed: int = 12345,
+            usetest: bool = False):
         """
         Extracts validation dataset from the train dataset.
 
@@ -144,14 +145,21 @@ class PetDataset(object):
             how much data should be taken as validation dataset
         seed : int
             The seed for random state
+        usetest : bool
+            Tells if the test dataset should be split
+
+        Returns
+        -------
+        Tuple[List, List, List, List] : Tuple with train inputs, validation
+            inputs, train outputs, validation outputs
         """
         dataxtrain, dataxvalid, dataytrain, datayvalid = train_test_split(
-            self.dataX,
-            self.dataY,
+            self.testX if usetest else self.dataX,
+            self.testY if usetest else self.dataY,
             test_size=percentage,
             random_state=seed,
             shuffle=True,
-            stratify=self.dataY
+            stratify=self.testY if usetest else self.dataY
         )
         return (dataxtrain, dataxvalid, dataytrain, datayvalid)
 
@@ -170,9 +178,9 @@ class PetDataset(object):
         seed : int
             The seed for random state
         """
-        _, X, _, _ = self.train_validation_split(percentage, seed)
+        _, X, _, _ = self.split_dataset(percentage, seed)
         for x in X:
-            yield self.prepare_input_sample(x)
+            yield [self.prepare_input_sample(x)]
 
     def evaluate(self, predictions: List, truth: List):
         """
