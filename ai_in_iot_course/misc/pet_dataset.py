@@ -12,6 +12,7 @@ from sklearn.model_selection import train_test_split
 
 from ai_in_iot_course.misc.utils import download_url
 
+
 class PetDataset(object):
     """
     The Oxford-IIIT Pet Dataset
@@ -162,7 +163,6 @@ class PetDataset(object):
             stratify=self.testY if usetest else self.dataY
         )
         return (dataxtrain, dataxvalid, dataytrain, datayvalid)
-
 
     def calibration_dataset_generator(
             self,
