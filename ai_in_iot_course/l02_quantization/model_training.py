@@ -1,7 +1,6 @@
 import argparse
 import tensorflow as tf
 from pathlib import Path
-import numpy as np
 
 from ai_in_iot_course.misc.pet_dataset import PetDataset
 
@@ -125,6 +124,7 @@ class PetClassifier(object):
             ],
             validation_data=validdataset
         )
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
