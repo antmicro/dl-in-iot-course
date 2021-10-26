@@ -10,8 +10,6 @@ import itertools
 from pathlib import Path
 import matplotlib.colors as colors
 from matplotlib import gridspec
-from matplotlib.collections import LineCollection
-from math import floor
 
 
 def draw_confusion_matrix(
