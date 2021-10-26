@@ -80,7 +80,7 @@ class PetClassifier(object):
             img = (img - self.mean) / self.std
             return img, tf.convert_to_tensor(onehot)
 
-        Xt, Xv, Yt, Yv = self.dataset.train_validation_split(
+        Xt, Xv, Yt, Yv = self.dataset.split_dataset(
             0.25
         )
         Yt = list(self.dataset.onehotvectors[Yt])
