@@ -92,7 +92,7 @@ class ModelTester(object):
                 usetest=True
             )
         # for each entry in the test dataset
-        for X, y in tqdm(list(zip(dataX, dataY))):
+        for X, y in tqdm(list(zip(dataX, dataY)), desc=f'evaluating {prefix}'):
             # preprocess data
             Xp = self.dataset.prepare_input_sample(X)
             yp = self.dataset.prepare_output_sample(y)
