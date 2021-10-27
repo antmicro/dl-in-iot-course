@@ -9,6 +9,7 @@ from PIL import Image
 import numpy as np
 from typing import Tuple, List, Any
 from sklearn.model_selection import train_test_split
+from tqdm import tqdm
 
 from dl_in_iot_course.misc.utils import download_url
 
@@ -179,7 +180,7 @@ class PetDataset(object):
             The seed for random state
         """
         _, X, _, _ = self.split_dataset(percentage, seed)
-        for x in X:
+        for x in tqdm(X, desc='calibration'):
             yield [self.prepare_input_sample(x)]
 
     def evaluate(self, predictions: List, truth: List):
