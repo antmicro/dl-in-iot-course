@@ -6,9 +6,9 @@ import time
 import numpy as np
 from typing import Optional, Any
 
-from ai_in_iot_course.misc.pet_dataset import PetDataset
-from ai_in_iot_course.misc.draw import draw_confusion_matrix
-from ai_in_iot_course.misc import metrics
+from dl_in_iot_course.misc.pet_dataset import PetDataset
+from dl_in_iot_course.misc.draw import draw_confusion_matrix
+from dl_in_iot_course.misc import metrics
 
 
 class ModelTester(object):

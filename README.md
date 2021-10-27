@@ -6,10 +6,10 @@ This repository contains tasks for laboratories for the "Optimization of Deep Le
 
 ## Course classes
 
-Each of the `l<number>_<topic>` directories in the `ai_in_iot_course` module contain a separate README with the list of tasks.
+Each of the `l<number>_<topic>` directories in the `dl_in_iot_course` module contain a separate README with the list of tasks.
 Please follow the links to go to the list of tasks:
 
-* [Lab 02 - Quantization](ai_in_iot_course/l02_quantization)
+* [Lab 02 - Quantization](dl_in_iot_course/l02_quantization)
 
 ## Cloning the repository
 
@@ -60,5 +60,5 @@ Singularity by default enables using GUI, makes all of the devices available fro
 In order to handle submodules easily, all of the executable scripts should be started from the root of the repository, i.e.:
 
 ```
-python3 -m ai_in_iot_course.l02_quantization.quantization_experiments -h
+python3 -m dl_in_iot_course.l02_quantization.quantization_experiments -h
 ```

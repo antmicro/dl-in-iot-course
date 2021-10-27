@@ -2,7 +2,7 @@ import argparse
 import tensorflow as tf
 from pathlib import Path
 
-from ai_in_iot_course.misc.pet_dataset import PetDataset
+from dl_in_iot_course.misc.pet_dataset import PetDataset
 
 
 class PetClassifier(object):

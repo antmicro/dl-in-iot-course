@@ -10,7 +10,7 @@ import numpy as np
 from typing import Tuple, List, Any
 from sklearn.model_selection import train_test_split
 
-from ai_in_iot_course.misc.utils import download_url
+from dl_in_iot_course.misc.utils import download_url
 
 
 class PetDataset(object):

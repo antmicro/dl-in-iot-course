@@ -57,7 +57,7 @@ It requires implementing methods for:
 * In the main script, uncomment all already supported classes and run it (it may take some time):
 
   ```
-  python3 -m ai_in_iot_course.l02_quantization.quantization_experiments \
+  python3 -m dl_in_iot_course.l02_quantization.quantization_experiments \
         --model-path models/pet-dataset-tensorflow.h5 \
         --dataset-root build/pet-dataset/ \
         --results-path build/results
