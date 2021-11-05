@@ -19,9 +19,10 @@ Install it before cloning the repository.
 To clone the repository with all models, run:
 
 ```
-git clone https://github.com/antmicro/dl-in-iot-course.git
-cd dl-in-iot-course
+git clone --recursive https://github.com/antmicro/dl-in-iot-course.git
+cd dl-in-iot-course/models
 git lfs pull
+cd ..
 ```
 
 ## Environment preparation
