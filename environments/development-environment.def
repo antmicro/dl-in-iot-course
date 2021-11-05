@@ -37,6 +37,7 @@ From: debian:bullseye
         scikit-learn \
         tensorflow \
         tensorflow-addons \
+        tensorflow-model-optimization \
         tqdm
 
     $PIPINST git+https://github.com/onnx/onnx-tensorflow.git@v1.9.0

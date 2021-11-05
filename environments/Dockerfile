@@ -30,6 +30,7 @@ RUN $PIPINST \
     scikit-learn \
     tensorflow \
     tensorflow-addons \
+    tensorflow-model-optimization \
     tqdm
 
 RUN $PIPINST git+https://github.com/onnx/onnx-tensorflow.git@v1.9.0
