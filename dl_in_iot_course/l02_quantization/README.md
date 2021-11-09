@@ -24,8 +24,8 @@ It requires implementing methods for:
 ## Tasks
 
 * Go over the [quantization_experiments script](quantization_experiments.py) and check what it does (go to methods from other modules to get the better understanding on how the solution works).
-* In `NativeModel` class, in the `prepare_model` method, add printing summary of the model (there is a dedicated method for this in TensorFlow models) - check out the number of parameters in the model.
-* Finish the `FP32Model` class:
+* `[1pt]` In `NativeModel` class, in the `prepare_model` method, add printing summary of the model (there is a dedicated method for this in TensorFlow models) - check out the number of parameters in the model.
+* `[4pt]` Finish the `FP32Model` class:
 
     * in `optimize_model`, load the trained model, create a `tf.lite.TFLiteConverter` object from the model, convert it to the TFLite model without any optimizations and save results to the file under `self.modelpath` path.
     * in `prepare_model`, create a `tf.lite.Interpreter` for the model saved in `self.modelpath` path.
@@ -34,7 +34,7 @@ It requires implementing methods for:
     * in `run_inference` method, invoke the model.
     * in `postprocess_outputs`, implement the method for getting the output tensor (check out `preprocess_input` method for hints on how to do it).
 
-* Finish the `INT8Model` class:
+* `[4pt]` Finish the `INT8Model` class:
 
     * In `optimize_model`, optimize a model to work in full `int8` mode:
 
@@ -47,7 +47,7 @@ It requires implementing methods for:
 
         * remember to quantize the inputs and dequantize the outputs (`scale` and `zero_point` parameters are present in `self.model.get_input_details()[0]['quantization']` field, respectively)!
 
-* Finish the `ImbalancedINT8Model` class:
+* `[2pt]` Finish the `ImbalancedINT8Model` class:
 
     * Implement `optimize_model` method, where the `calibration_dataset_generator` will take all examples for objects with 5 class and use them for calibration:
         
@@ -80,20 +80,24 @@ It requires implementing methods for:
 
 * Write a small summary for experiments containing:
 
-    * Number of parameters in the model (in total),
-    * Size of FP32 TFLite model, and size of the INT8 model - compare the size reduction (check file sizes),
+    * `[1pt]` Number of parameters in the model (in total),
+    * `[1pt]` Size of FP32 TFLite model, and size of the INT8 model - compare the size reduction (check file sizes),
     * For each experiment include:
 
         * The computed metrics,
         * Confusion matrix.
     * Answers for the questions:
 
-        * How does the TFLite FP32 model perform in comparison to native model (both performance- and quality-wise)?
-        * How does the best INT8 model perform in comparison to the TFLite FP32 model (both performance- and quality-wise)?
-        * Is there any specific trend observable in the quality of INT8 models based on calibration dataset size?
-        * How does the model calibrated with samples of only one class perform in comparison to other INT8 models?
+        * `[1pt]` How does the TFLite FP32 model perform in comparison to native model (both performance- and quality-wise)?
+        * `[1pt]` How does the best INT8 model perform in comparison to the TFLite FP32 model (both performance- and quality-wise)?
+        * `[1pt]` Is there any specific trend observable in the quality of INT8 models based on calibration dataset size?
+        * `[1pt]` How does the model calibrated with samples of only one class perform in comparison to other INT8 models?
 
   The summary should be put in the project's `summaries` directory - follow the README.md in this directory for details.
+
+Additional factors:
+
+* `[2pt]` Git history quality
 
 `NOTE:` the INT8 models may actually perform slower than FP32 models on x86_64 CPUs.
 
