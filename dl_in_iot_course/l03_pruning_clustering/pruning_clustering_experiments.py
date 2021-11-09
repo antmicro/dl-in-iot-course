@@ -162,7 +162,7 @@ class PrunedModel(TFMOTOptimizedModel):
 
     def compress_and_fine_tune(self, originalmodel):
         self.epochs = 4
-        sched = tfmot.sparsity.keras.ConstantSparsity(
+        self.sched = tfmot.sparsity.keras.ConstantSparsity(
             self.target_sparsity,
             begin_step=0,
             end_step=1,
