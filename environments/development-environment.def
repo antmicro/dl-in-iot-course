@@ -14,12 +14,14 @@ From: debian:bullseye
 
     apt_wrapper \
         curl \
+        fd-find \
         git \
         python3 \
         python3-pip \
         tmux \
         vim \
-        wget
+        wget \
+        zip
 
     $PIPINST pip setuptools
     $PIPINST \

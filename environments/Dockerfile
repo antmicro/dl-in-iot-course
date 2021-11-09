@@ -5,12 +5,14 @@ ENV PIPINST 'python3 -m pip install --no-cache-dir --upgrade'
 
 RUN apt-get update && INST \
     curl \
+    fd-find \
     git \
     python3 \
     python3-pip \
     tmux \
     vim \
     wget \
+    zip \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN $PIPINST pip setuptools
