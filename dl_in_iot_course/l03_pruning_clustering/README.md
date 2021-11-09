@@ -76,6 +76,8 @@ Simplify the above formulas, show the common part of the equations, show the dif
        In the directory containing `.tflite` files, you can run (check [sharkdp/fd](https://github.com/sharkdp/fd) for details):
 
           fd -t f -e tflite -x zip {.}.zip {}
+      
+      `NOTE:` in Singularity/Docker environments the `fd` tool is named `fdfind`.
     * Answers for the questions:
 
         * `[1pt]` In their best variants, how do quantization, pruning and clustering compare to each other (both performance- and quality-wise)?
