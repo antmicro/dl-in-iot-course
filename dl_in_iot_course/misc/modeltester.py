@@ -18,7 +18,8 @@ class ModelTester(object):
             self,
             dataset: PetDataset,
             modelpath: Path,
-            originalmodel: Optional[Path] = None):
+            originalmodel: Optional[Path] = None,
+            logdir: Optional[Path] = None):
         """
         Initializer for ModelTester.
 
@@ -31,9 +32,14 @@ class ModelTester(object):
         originalmodel : Path
             Path to the model to optimize before testing.
             Optimized model will be saved in modelpath
+        logdir : Path
+            Path to the training/optimization logs
         """
         self.dataset = dataset
         self.modelpath = modelpath
+        self.logdir = logdir
+        if self.logdir:
+            self.logdir.mkdir(parents=True, exist_ok=True)
         self.timemeasurements = []
         if originalmodel:
             self.optimize_model(originalmodel)
