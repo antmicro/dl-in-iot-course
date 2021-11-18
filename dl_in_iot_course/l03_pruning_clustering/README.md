@@ -21,7 +21,7 @@ Simplify the above formulas, show the common part of the equations, show the dif
 
 ### Practical tasks - Pruning and Clustering
 
-* Go over the [pruning_clustering_experiments script](pruning_clustering_experiments.py) and check what id does (especially check the `optimize_model` method that prepares structures for model optimization and fine-tuning).
+* Go over the [pruning_clustering_experiments script](pruning_clustering_experiments.py) and check what it does (especially check the `optimize_model` method that prepares structures for model optimization and fine-tuning).
 * In the end of the afore-mentioned `optimize_model` function there is a `compress_and_fine_tune` method that will need to be completed in the following tasks - it will handle model optimization and fine-tuning
 * `[2pt]` Finish the implementation of the `TFMOTOptimizedModel` class:
 
