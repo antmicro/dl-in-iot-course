@@ -1,6 +1,6 @@
 import argparse
 import numpy as np
-import tvm
+import tvm  # noqa: F401
 from tvm import relay, transform
 import tflite
 import tensorflow as tf
@@ -73,7 +73,7 @@ class TVMModel(ModelTester):
         with open(originalmodel, 'rb') as f:
             modelfile = f.read()
 
-        tflite_model = tflite.Model.GetRootAsModel(modelfile, 0)
+        tflite_model = tflite.Model.GetRootAsModel(modelfile, 0)  # noqa: F841
 
         interpreter = tf.lite.Interpreter(model_content=modelfile)
         interpreter.allocate_tensors()
@@ -101,7 +101,7 @@ class TVMModel(ModelTester):
                 })
             )
 
-        seq = transform.Sequential(transforms)
+        seq = transform.Sequential(transforms)  # noqa: F841
 
         # TODO implement
         pass
