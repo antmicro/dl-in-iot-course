@@ -42,6 +42,7 @@ From: nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
     $PIPINST \
         Jinja2 \
         cffi \
+        cloudpickle \
         cmake \
         flake8 \
         ipython \
@@ -50,6 +51,7 @@ From: nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
         numpy \
         onnx \
         opencv-python \
+        psutil \
         ptipython \
         pytest \
         scikit-learn \
@@ -57,7 +59,9 @@ From: nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
         tensorflow-addons \
         tensorflow-model-optimization \
         tflite \
-        tqdm
+        tornado \
+        tqdm \
+        xgboost
 
     $PIPINST git+https://github.com/onnx/onnx-tensorflow.git@v1.9.0
     $PIPINST git+https://github.com/onnx/tensorflow-onnx.git@v1.9.2

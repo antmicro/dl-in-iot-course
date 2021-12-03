@@ -43,6 +43,7 @@ From: debian:bullseye
     $PIPINST \
         Jinja2 \
         cffi \
+        cloudpickle \
         cmake \
         flake8 \
         ipython \
@@ -51,6 +52,7 @@ From: debian:bullseye
         numpy \
         onnx \
         opencv-python \
+        psutil \
         ptipython \
         pytest \
         scikit-learn \
@@ -58,7 +60,9 @@ From: debian:bullseye
         tensorflow-addons \
         tensorflow-model-optimization \
         tflite \
-        tqdm
+        tornado \
+        tqdm \
+        xgboost
 
     $PIPINST git+https://github.com/onnx/onnx-tensorflow.git@v1.9.0
     $PIPINST git+https://github.com/onnx/tensorflow-onnx.git@v1.9.2
