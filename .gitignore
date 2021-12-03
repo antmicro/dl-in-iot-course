@@ -144,3 +144,4 @@ tags
 # generated resources for docs
 docs/source/generated/*
 environments/*.sif
+delegate-example/tensorflow
