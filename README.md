@@ -17,7 +17,7 @@ Please follow the links to go to the list of tasks:
 
 ## Cloning the repository
 
-`NOTE:` [Git LFS tool](https://git-lfs.github.com/) is required to pull the large files, such as models.
+`NOTE:` [Git LFS tool](https://git-lfs.github.com/) is required to pull large files, such as models.
 Install it before cloning the repository.
 
 To clone the repository with all models, run:
@@ -31,16 +31,15 @@ cd ..
 
 ## Environment preparation
 
-To provide a consistent environment for running tasks, the [Sylabs Singularity](https://sylabs.io/singularity/) image definitions are available in the [environments directory](environments/).
+To provide a consistent environment for running tasks, [Apptainer](https://apptainer.org/) and Docker image definitions are available in the [environments directory](environments/).
 
-To get started with the Singularity environment, check the [Quick Start guide](https://sylabs.io/guides/3.8/user-guide/quick_start.html) for installation and running steps.
+To get started with the Apptainer environment, check the [Quick Start guide](https://apptainer.org/docs/user/main/quick_start.html) for installation and running steps.
 
 To build the SIF files from image definitions, run:
 
 ```
-cd environments/
-mkdir tmp
-env SINGULARITY_TMPDIR=(pwd)/tmp sudo -E singularity build development-environment.sif development-environment.def
+cd environments
+sudo aptainer build development-environment.sif development-environment.def
 cd ..
 ```
 
@@ -49,13 +48,13 @@ cd ..
 To start working in the container, run:
 
 ```
-singularity shell environments/development-environment.sif
+apptainer shell environments/development-environment.sif
 ```
 
 To use the GPU-enabled container (only for NVIDIA with CUDA), run:
 
 ```
-singularity shell --nv environments/development-environment-gpu.sif
+apptainer shell --nv environments/development-environment-gpu.sif
 ```
 
 Singularity by default enables using GUI, makes all of the devices available from the container, and mounts the /home directory by default.
