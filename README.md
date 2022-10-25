@@ -9,7 +9,11 @@ This repository contains tasks for laboratories for the "Optimization of Deep Le
 Each of the `l<number>_<topic>` directories in the `dl_in_iot_course` module contain a separate README with the list of tasks.
 Please follow the links to go to the list of tasks:
 
-* [Lab 02 - Quantization](dl_in_iot_course/l02_quantization)
+* [Lab 02 - Quantization with TensorFlow Lite](dl_in_iot_course/l02_quantization)
+* [Lab 03 - Pruning and clustering with TensorFlow Model Optimization Toolkit](dl_in_iot_course/l03_pruning_clustering)
+* [Lab 04 - Introduction to Apache TVM](dl_in_iot_course/l04_tvm)
+* [Lab 05 - Implementing a TensorFlow Lite delegate](dl_in_iot_course/l05_tflite_delegate)
+* [Lab 06 - Fine-tuning of model and operations in Apache TVM](dl_in_iot_course/l06_tvm_fine_tuning)
 
 ## Cloning the repository
 
