@@ -41,12 +41,12 @@ From: debian:bullseye
 
     $PIPINST pip setuptools
     $PIPINST \
-        Jinja2 \
         cffi \
         cloudpickle \
         cmake \
         flake8 \
         ipython \
+        Jinja2 \
         matplotlib \
         netron \
         numpy \
@@ -59,15 +59,16 @@ From: debian:bullseye
         tensorflow \
         tensorflow-addons \
         tensorflow-model-optimization \
+        tensorflow-probability \
         tflite \
         tornado \
         tqdm \
         xgboost
 
-    $PIPINST git+https://github.com/onnx/onnx-tensorflow.git@v1.9.0
-    $PIPINST git+https://github.com/onnx/tensorflow-onnx.git@v1.9.2
+    $PIPINST git+https://github.com/onnx/onnx-tensorflow.git@v1.10.0
+    $PIPINST git+https://github.com/onnx/tensorflow-onnx.git@v1.12.1
 
-    git clone --recursive https://github.com/apache/tvm.git -b v0.9.dev0 /tvm
+    git clone --recursive https://github.com/apache/tvm.git -b v0.10.0 /tvm
     cd /tvm
     mkdir build && cd build
     mv /tvm-config.cmake /tvm/build/config.cmake
@@ -83,3 +84,4 @@ From: debian:bullseye
 
 %environment
     LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+    PYTHONPATH=/tvm/python:$PYTHONPATH
