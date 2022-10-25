@@ -40,12 +40,12 @@ From: nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
 
     $PIPINST pip setuptools
     $PIPINST \
-        Jinja2 \
         cffi \
         cloudpickle \
         cmake \
         flake8 \
         ipython \
+        Jinja2 \
         matplotlib \
         netron \
         numpy \
@@ -58,6 +58,7 @@ From: nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
         tensorflow \
         tensorflow-addons \
         tensorflow-model-optimization \
+        tensorflow-probability \
         tflite \
         tornado \
         tqdm \
@@ -86,3 +87,4 @@ From: nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
 
 %environment
     LD_LIBRARY_PATH=/usr/local/lib:/usr/local/cuda/lib64/:/usr/local/cuda/compat/:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:$LD_LIBRARY_PATH
+    PYTHONPATH=/tvm/python:$PYTHONPATH
