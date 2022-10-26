@@ -8,7 +8,6 @@ from typing import List, Tuple, Optional
 import numpy as np
 import itertools
 from pathlib import Path
-import matplotlib.colors as colors
 from matplotlib import gridspec
 
 
