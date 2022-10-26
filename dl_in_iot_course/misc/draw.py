@@ -46,12 +46,6 @@ def draw_confusion_matrix(
 
     confusion_matrix = np.array(confusion_matrix, dtype=np.float32, copy=True)
 
-    # normalize confusion matrix
-    confusion_matrix /= confusion_matrix.sum(axis=0)
-
-    # compute overall accuracy
-    accuracy = np.trace(confusion_matrix) / np.sum(confusion_matrix)
-
     # compute sensitivity
     correctactual = confusion_matrix.diagonal() / confusion_matrix.sum(axis=1)
     correctactual = correctactual.reshape(1, len(class_names))
@@ -61,8 +55,15 @@ def draw_confusion_matrix(
         confusion_matrix.diagonal() / confusion_matrix.sum(axis=0)
     correctpredicted = correctpredicted.reshape(len(class_names), 1)
 
+    # compute overall accuracy
+    accuracy = np.trace(confusion_matrix) / np.sum(confusion_matrix)
+
+    # normalize confusion matrix
+    confusion_matrix /= confusion_matrix.sum(axis=0)
+    confusion_matrix = confusion_matrix.transpose()
+
     if figsize is None:
-        figsize = confusion_matrix.shape
+        figsize = [35, 35]
 
     if dpi is None:
         dpi = 216
@@ -97,10 +98,11 @@ def draw_confusion_matrix(
     axConfMatrix.set_ylabel('Predicted class', fontsize='x-large')
     img = axConfMatrix.imshow(
         confusion_matrix,
-        norm=colors.LogNorm(),
         interpolation='nearest',
         cmap=cmap,
         aspect='auto',
+        vmin=0.0,
+        vmax=1.0
     )
     axConfMatrix.xaxis.set_ticks_position('top')
     axConfMatrix.xaxis.set_label_position('top')
@@ -110,7 +112,7 @@ def draw_confusion_matrix(
             range(len(class_names)),
             range(len(class_names))):
         txt = axConfMatrix.text(
-            i, j,
+            j, i,
             ('100' if confusion_matrix[i, j] == 1.0
                 else f'{100.0 * confusion_matrix[i,j]:3.1f}'),
             ha='center',
