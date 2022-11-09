@@ -5,22 +5,6 @@ For this task, we will use [TensorFlow Model Optimization Toolkit](https://githu
 
 ## Tasks
 
-### Theoretical task - Quantization follow-up
-
-`[2pt]` Demonstrate why the asymmetric quantization is more computationally-demanding than the symmetric quantization.
-
-Start from the fact that in symmetric quantization we have:
-
-    WX = s_W * (W_int) * s_X * (X_int)
-
-And in asymmetric quantization we have:
-
-    WX = s_W * (W_int - z_W) * s_X * (X_int - z_X)
-
-Simplify the above formulas, show the common part of the equations, show the differences, tell what can be optimized and what brings an overhead.
-
-### Practical tasks - Pruning and Clustering
-
 * Go over the [pruning_clustering_experiments script](pruning_clustering_experiments.py) and check what it does (especially check the `optimize_model` method that prepares structures for model optimization and fine-tuning).
 * In the end of the afore-mentioned `optimize_model` function there is a `compress_and_fine_tune` method that will need to be completed in the following tasks - it will handle model optimization and fine-tuning
 * `[2pt]` Finish the implementation of the `TFMOTOptimizedModel` class:
@@ -53,7 +37,7 @@ Simplify the above formulas, show the common part of the equations, show the dif
   ```
 
   In the `build/results` directory, the script will create:
-    
+
     * `<prefix>-metrics.md` file - contains basic metrics, such as accuracy, precision, sensitivity or G-Mean, along with inference time
     * `<prefix>-confusion-matrix.png` file - contains visualization of confusion matrix for the model evaluation.
   Those files will be created for:
@@ -76,7 +60,7 @@ Simplify the above formulas, show the common part of the equations, show the dif
        In the directory containing `.tflite` files, you can run (check [sharkdp/fd](https://github.com/sharkdp/fd) for details):
 
           fd -t f -e tflite -x zip {.}.zip {}
-      
+
       `NOTE:` in Singularity/Docker environments the `fd` tool is named `fdfind`.
     * Answers for the questions:
 
