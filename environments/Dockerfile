@@ -1,70 +1,69 @@
-FROM debian:bullseye
+FROM archlinux:latest
 
-ENV INST 'env DEBIAN_FRONTEND=noninteractive apt-get install -y'
-ENV PIPINST 'python3 -m pip install --no-cache-dir --upgrade'
+ENV PIPINST 'python -m pip install --no-cache-dir --upgrade'
 
-RUN apt-get update && INST \
-    build-essential \
+RUN pacman --noconfirm -Syu
+RUN pacman --noconfirm -Sy \
+    blas \
+    cblas \
+    clang \
+    cmake \
     curl \
-    fd-find \
-    g++ \
+    fd \
+    flake8 \
     gcc \
     git \
-    libglfw3 \
-    libglfw3-dev \
-    libgomp1 \
-    libopenblas-dev \
-    libprotoc-dev \
-    libtinfo-dev \
+    gtest \
+    ipython \
     llvm \
-    llvm-dev \
-    protobuf-compiler \
-    python3 \
-    python3-dev \
-    python3-pip \
+    make \
+    protobuf \
+    pybind11 \
+    python-cffi \
+    python-cloudpickle \
+    python-jinja \
+    python-matplotlib \
+    python-numpy \
+    python-opencv \
+    python-pip \
+    python-psutil \
+    python-pytest \
+    python-pytorch \
+    python-scikit-learn \
+    python-setuptools \
+    python-tornado \
+    python-tqdm \
     tmux \
     vim \
     wget \
-    zip \
-    && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-RUN $PIPINST pip setuptools
+    zip
 
 RUN $PIPINST \
-    Jinja2 \
-    cffi \
     cloudpickle \
-    cmake \
-    flake8 \
-    ipython \
-    matplotlib \
+    flatbuffers \
     netron \
-    numpy \
+    nni \
     onnx \
-    opencv-python \
-    psutil \
     ptipython \
-    pytest \
-    scikit-learn \
-    tensorflow \
-    tensorflow-addons \
-    tensorflow-model-optimization \
+    tensorflow==2.10 \
+    tensorflow-addons==0.18.0 \
+    tensorflow-model-optimization==0.7.2 \
     tflite \
-    tornado \
-    tqdm \
+    torchvision==0.13.1 \
     xgboost
 
-RUN $PIPINST git+https://github.com/onnx/onnx-tensorflow.git@v1.9.0
-RUN $PIPINST git+https://github.com/onnx/tensorflow-onnx.git@v1.9.2
+RUN $PIPINST git+https://github.com/onnx/onnx-tensorflow.git
+RUN $PIPINST git+https://github.com/onnx/tensorflow-onnx.git
 
-RUN git clone --recursive https://github.com/apache/tvm.git -b v0.9.dev0 /tvm && \
+COPY cpu-config.cmake /tvm-config.cmake
+RUN cd / && git clone --recursive https://github.com/apache/tvm.git -b v0.10.0 /tvm && \
     cd /tvm && mkdir build && cd build && \
     mv /tvm-config.cmake /tvm/build/config.cmake && \
     cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
     make -j`nproc` && \
     make install && \
     ldconfig && \
-    $PIPINST -e /tvm/python && \
+    CONDA_BUILD=yes $PIPINST -e /tvm/python && \
     cd / && \
     rm -rf /tvm/build
 
