@@ -88,11 +88,11 @@ Since NNI supports structured pruning mainly in PyTorch, we will switch to this 
 ### Tasks
 
 * Read the [structured_pruning script](structured_pruning_experiments.py) thoroughly.
-* `NOTE:` You DO NOT NEED to train the model, use the existing model `fashion_mnist.pth` from `models` directory.
+* `NOTE:` You DO NOT NEED to train the model, use the existing model `fashion-mnist-classifier.pth` from `models` directory.
 * [1pt] Create a traced optimizer (check `nni.trace` method), use Adam optimizer with `TRAINING_LEARNING_RATE` (as in training optimizer).
 * [1pt] Formulate the configuration list for the ActivationAPoZRank pruner - we want to prune both 2D convolutions and linear layers.
 * [1pt] What is more, NNI by default prunes ALL layers of given type, even the output ones - EXCLUDE the final linear layer from pruning schedule.
-* [1pt] Define `ActivationAPoZRank` pruner using the `model`, defined configuration list, `trainer` method, traced optimizer and criterion. Set `training_batches` to 1000.- I highly recommend using legacy version of the pruner (documented in [ActivationAPoZRank v2.8](https://nni.readthedocs.io/en/v2.8/reference/compression/pruner.html#activation-apoz-rank-pruner)
+* [1pt] Define `ActivationAPoZRank` pruner using the `model`, defined configuration list, `trainer` method, traced optimizer and criterion. Set `training_batches` to 1000. I highly recommend using legacy version of the pruner (documented in [ActivationAPoZRank v2.8](https://nni.readthedocs.io/en/v2.8/reference/compression/pruner.html#activation-apoz-rank-pruner)
 * [1pt] The `pruner.compress()` method will compute the pruning mask, and the additional prints will show the pruning status - Please include logs from terminal for those printouts
 * [2pt] Speedup the model using `ModelSpeedup.speedup_model` function. The expected dummy input for the network should have 1x1x28x28 shape (use `torch.randn(shape).to(model.device)`).
 * [3pt] Fine-tune the model:
@@ -111,6 +111,18 @@ Since NNI supports structured pruning mainly in PyTorch, we will switch to this 
     * [1pt] Include the ONNX file with pruned PyTorch model (use Git LFS)
     * [1pt] Include the TFLite file with pruned PyTorch model (use Git LFS)
     * [1pt] In the summary, include the visualization of the graph using Netron
+
+The command should be executed more or less as follows:
+
+```
+python3 -m dl_in_iot_course.l03_pruning_clustering.structured_pruning_experiments \
+    --input-model models/fashion-mnist-classifier.pth \
+    --backup-model backup-model.pth \
+    --final-model final-model.pth \
+    --dataset-path fashion-dataset
+    --onnx-model model.onnx \
+    --tflite-model model.tflite
+```
 
 Additional factors:
 
