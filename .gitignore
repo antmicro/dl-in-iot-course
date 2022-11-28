@@ -145,3 +145,4 @@ tags
 docs/source/generated/*
 environments/*.sif
 delegate-example/tensorflow
+**/.DS_Store
