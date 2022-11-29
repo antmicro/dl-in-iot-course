@@ -56,17 +56,17 @@ From: nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
         ptipython \
         pytest \
         scikit-learn \
-        tensorflow \
-        tensorflow-addons \
-        tensorflow-model-optimization \
+        tensorflow==2.10 \
+        tensorflow-addons==0.18.0 \
+        tensorflow-model-optimization==0.7.2 \
         tensorflow-probability \
         tflite \
         tornado \
         tqdm \
         xgboost
 
-    $PIPINST git+https://github.com/onnx/onnx-tensorflow.git@v1.9.0
-    $PIPINST git+https://github.com/onnx/tensorflow-onnx.git@v1.9.2
+    $PIPINST git+https://github.com/onnx/onnx-tensorflow.git@v1.10.0
+    $PIPINST git+https://github.com/onnx/tensorflow-onnx.git@v1.13.0
 
     export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/cuda/lib64/:/usr/local/cuda/compat/:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:$LD_LIBRARY_PATH
 
