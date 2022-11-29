@@ -74,7 +74,7 @@ From: nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
 
     ldconfig
 
-    git clone --recursive https://github.com/apache/tvm.git -b v0.9.dev0 /tvm
+    git clone --recursive https://github.com/apache/tvm.git -b v0.10.0 /tvm
     cd /tvm
     mkdir build && cd build
     mv /tvm-config.cmake /tvm/build/config.cmake
@@ -84,7 +84,7 @@ From: nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
 
     ldconfig
 
-    $PIPINST -e /tvm/python
+    CONDA_BUILD=yes $PIPINST -e /tvm/python
     cd /
     rm -rf /tvm/build
 
