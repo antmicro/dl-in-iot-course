@@ -61,6 +61,8 @@ From: nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
         tensorflow-model-optimization==0.7.2 \
         tensorflow-probability \
         tflite \
+        torch==1.12.1 \
+        torchvision==0.13.1 \
         tornado \
         tqdm \
         xgboost
