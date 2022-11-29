@@ -38,7 +38,7 @@ From: nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
         wget \
         zip
 
-    $PIPINST pip setuptools
+    $PIPINST pip setuptools pyyaml
     $PIPINST \
         cffi \
         cloudpickle \
@@ -48,6 +48,7 @@ From: nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
         Jinja2 \
         matplotlib \
         netron \
+        nni \
         numpy \
         onnx \
         opencv-python \
