@@ -48,12 +48,13 @@ RUN $PIPINST \
     tensorflow==2.10 \
     tensorflow-addons==0.18.0 \
     tensorflow-model-optimization==0.7.2 \
+    tensorflow-probability==0.18.0 \
     tflite \
     torchvision==0.13.1 \
     xgboost
 
-RUN $PIPINST git+https://github.com/onnx/onnx-tensorflow.git
-RUN $PIPINST git+https://github.com/onnx/tensorflow-onnx.git
+RUN $PIPINST git+https://github.com/onnx/onnx-tensorflow.git@v1.10.0
+RUN $PIPINST git+https://github.com/onnx/tensorflow-onnx.git@v1.13.0
 
 COPY cpu-config.cmake /tvm-config.cmake
 RUN cd / && git clone --recursive https://github.com/apache/tvm.git -b v0.10.0 /tvm && \
