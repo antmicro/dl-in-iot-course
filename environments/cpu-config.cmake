@@ -137,7 +137,7 @@ set(USE_LLVM ON)
 set(USE_BYODT_POSIT OFF)
 
 # Whether use BLAS, choices: openblas, atlas, apple
-set(USE_BLAS openblas)
+set(USE_BLAS none)
 
 # Whether to use MKL
 # Possible values:
