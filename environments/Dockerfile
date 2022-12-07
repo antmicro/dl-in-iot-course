@@ -41,8 +41,10 @@ RUN pacman --noconfirm -Sy \
 RUN $PIPINST \
     cloudpickle \
     flatbuffers \
+    jupyterlab \
     netron \
     nni \
+    notebook \
     onnx \
     ptipython \
     tensorflow==2.10 \

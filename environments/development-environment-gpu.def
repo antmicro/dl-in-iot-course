@@ -46,9 +46,11 @@ From: nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
         flake8 \
         ipython \
         Jinja2 \
+        jupyterlab \
         matplotlib \
         netron \
         nni \
+        notebook \
         numpy \
         onnx \
         opencv-python \
