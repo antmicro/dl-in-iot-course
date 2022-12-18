@@ -119,7 +119,7 @@ python3 -m dl_in_iot_course.l03_pruning_clustering.structured_pruning_experiment
     --input-model models/fashion-mnist-classifier.pth \
     --backup-model backup-model.pth \
     --final-model final-model.pth \
-    --dataset-path fashion-dataset
+    --dataset-path fashion-dataset \
     --onnx-model model.onnx \
     --tflite-model model.tflite
 ```
