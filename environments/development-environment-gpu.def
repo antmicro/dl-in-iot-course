@@ -67,7 +67,7 @@ From: nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
         torchvision==0.13.1 \
         tornado \
         tqdm \
-        xgboost
+        xgboost>=1.1.0,<1.6.0
 
     $PIPINST git+https://github.com/onnx/onnx-tensorflow.git@v1.10.0
     $PIPINST git+https://github.com/onnx/tensorflow-onnx.git@v1.13.0
