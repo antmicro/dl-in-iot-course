@@ -1,0 +1,82 @@
+From 10166d5dd37346fc74fc8f97f6d729c5e406c5bc Mon Sep 17 00:00:00 2001
+From: Grzegorz Latosinski <glatosinski@antmicro.com>
+Date: Tue, 27 Dec 2022 21:57:11 +0100
+Subject: [PATCH] Adjusted CFU-Playground for external project development
+
+This commit adjusts CFU Playground so the CFU_ROOT and
+PROJ_DIR directories can be provided as environment
+variables.
+
+The changes also include providing project name as
+argument in Renode script.
+
+Signed-off-by: Grzegorz Latosinski <glatosinski@antmicro.com>
+---
+ proj/proj.mk                       | 6 +++---
+ scripts/generate_renode_scripts.py | 4 ++--
+ soc/common_soc.mk                  | 2 +-
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/proj/proj.mk b/proj/proj.mk
+index 55582d3d..bd916728 100644
+--- a/proj/proj.mk
++++ b/proj/proj.mk
+@@ -48,7 +48,7 @@
+ 
+ export UART_SPEED ?= 1843200
+ export PROJ       := $(lastword $(subst /, ,${CURDIR}))
+-export CFU_ROOT   := $(realpath $(CURDIR)/../..)
++export CFU_ROOT   ?= $(realpath $(CURDIR)/../..)
+ export PLATFORM   ?= common_soc
+ export TARGET     ?= digilent_arty
+ export TTY        ?= $(or $(wildcard /dev/ttyUSB?), $(wildcard /dev/ttyACM?))
+@@ -213,9 +213,9 @@ ifneq '$(SW_ONLY)' '1'
+ 	pushd $(BUILD_DIR)/renode && cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_TRACE=$(ENABLE_TRACE_ARG) -DTRACE_DEPTH_VAL=$(VERILATOR_TRACE_DEPTH) \
+ 		-DINCLUDE_DIR="$(PROJ_DIR)" -DVTOP="$(CFU_VERILOG)" -DVIL_DIR="$(VIL_DIR)" $${VERILATOR_PATH:+"-DUSER_VERILATOR_DIR=$$VERILATOR_PATH"} \
+ 		-DTRACE_FILEPATH="$(VERILATOR_TRACE_PATH)" "$(RVI_DIR)" && make libVtop && popd
+-	$(CFU_ROOT)/scripts/generate_renode_scripts.py $(SOC_BUILD_DIR)/csr.json $(TARGET) $(BUILD_DIR)/renode/ --repl $(TARGET_REPL)
++	$(CFU_ROOT)/scripts/generate_renode_scripts.py $(SOC_BUILD_DIR)/csr.json $(TARGET) $(BUILD_DIR)/renode/ --repl $(TARGET_REPL) --project-name $(PROJ)
+ else
+-	$(CFU_ROOT)/scripts/generate_renode_scripts.py $(SOC_BUILD_DIR)/csr.json $(TARGET) $(BUILD_DIR)/renode/ --repl $(TARGET_REPL) --sw-only
++	$(CFU_ROOT)/scripts/generate_renode_scripts.py $(SOC_BUILD_DIR)/csr.json $(TARGET) $(BUILD_DIR)/renode/ --repl $(TARGET_REPL) --sw-only --project-name $(PROJ)
+ endif
+ 	@echo Generating Renode scripts finished
+ 
+diff --git a/scripts/generate_renode_scripts.py b/scripts/generate_renode_scripts.py
+index 9168d793..212a115a 100755
+--- a/scripts/generate_renode_scripts.py
++++ b/scripts/generate_renode_scripts.py
+@@ -116,6 +116,7 @@ def parse_args():
+                         default=[],
+                         help="List of memory regions to align automatically (necessary due to limitations in Renode)")
+     parser.add_argument("--sw-only", action="store_true", help="Generate script without simulating hardware CFU")
++    parser.add_argument("--project-name", help="Name of the project")
+     args = parser.parse_args()
+ 
+     return args
+@@ -129,8 +130,7 @@ def main():
+     litex_renode_repl_filepath = args.build_path + args.target + "_generated.repl"
+     robot_filepath = args.build_path + args.target + ".robot"
+ 
+-    proj_name = re.search("proj/(.*)/build", args.build_path)
+-    proj_name = proj_name.group(1)
++    proj_name = args.project_name
+ 
+     proj_path = os.path.abspath(os.path.join(args.build_path, "../.."))
+     predefined_resc_path = os.path.join(proj_path, "renode", args.target + ".resc")
+diff --git a/soc/common_soc.mk b/soc/common_soc.mk
+index 1ced95ee..daa3780d 100644
+--- a/soc/common_soc.mk
++++ b/soc/common_soc.mk
+@@ -32,7 +32,7 @@ ifndef CFU_ROOT
+   $(error CFU_ROOT must be set. $(HELP_MESSAGE))
+ endif
+ 
+-PROJ_DIR:=  $(CFU_ROOT)/proj/$(PROJ)
++PROJ_DIR?=  $(CFU_ROOT)/proj/$(PROJ)
+ CFU_V:=     $(if $(wildcard $(PROJ_DIR)/cfu.sv), $(PROJ_DIR)/cfu.sv, $(PROJ_DIR)/cfu.v)
+ CFU_ARGS:=  --cpu-cfu $(CFU_V)
+ TARGET_ARGS:= --target $(TARGET)
+-- 
+2.38.1
+
