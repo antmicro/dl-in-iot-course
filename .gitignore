@@ -146,3 +146,7 @@ docs/source/generated/*
 environments/*.sif
 delegate-example/tensorflow
 **/.DS_Store
+
+# CFU Playground temporary files
+cfu-playground/cfu_proj/build
+cfu-playground/CFU-Playground
