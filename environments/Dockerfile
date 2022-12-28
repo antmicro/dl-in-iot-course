@@ -53,7 +53,7 @@ RUN $PIPINST \
     tensorflow-probability==0.18.0 \
     tflite \
     torchvision==0.13.1 \
-    xgboost>=1.1.0,<1.6.0
+    "xgboost>=1.1.0,<1.6.0"
 
 RUN $PIPINST git+https://github.com/onnx/onnx-tensorflow.git@v1.10.0
 RUN $PIPINST git+https://github.com/onnx/tensorflow-onnx.git@v1.13.0
