@@ -93,6 +93,14 @@ In the UART console, run person detection demo implemented in TFLite Micro runni
 * In there, you can select 1/2/3 to test out various inputs feeded to the model
 * In the end, click `g` to `Run golden tests`
 
+IF Golden tests finish with:
+
+```
+OK  Golden tests passed
+```
+
+It means that everything is implemented correctly.
+
 To quit the simulation, run `quit` command in the main Renode console.
 
 * `[5pt]` Please create a commit adding `first-run.txt` file to the repository.
