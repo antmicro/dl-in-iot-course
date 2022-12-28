@@ -28,9 +28,6 @@ From: debian:bullseye
         gtk-sharp2 \
         libevent-dev \
         libftdi1-dev \
-        libglfw3 \
-        libglfw3-dev \
-        libgomp1 \
         libgtk2.0-dev \
         libjson-c-dev \
         libopenblas-dev \
@@ -59,28 +56,16 @@ From: debian:bullseye
 
     $PIPINST pip setuptools
     $PIPINST \
-        Jinja2 \
+        amaranth-yosys \
         cffi \
         cloudpickle \
         cmake \
-        flake8 \
-        ipython \
-        matplotlib \
-        netron \
         numpy \
-        onnx \
         opencv-python \
         psutil \
-        ptipython \
         pytest \
-        scikit-learn \
-        tensorflow \
-        tensorflow-addons \
-        tensorflow-model-optimization \
-        tflite \
         tornado \
-        tqdm \
-        xgboost
+        tqdm
 
     cd /
     wget https://static.dev.sifive.com/dev-tools/freedom-tools/v2020.08/riscv64-unknown-elf-gcc-10.1.0-2020.08.2-x86_64-linux-ubuntu14.tar.gz
