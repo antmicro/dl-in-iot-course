@@ -33,6 +33,20 @@ Thirdly, create a project from the template in the `cfu-playground/cfu_proj` dir
 cp -r CFU-Playground/proj/proj_template cfu_proj
 ```
 
+In the copied `cfu_proj` directory, modify the [line](https://github.com/google/CFU-Playground/blob/e9f32c9484ae0c21fbbd822a013a469090ebc6a4/proj/proj_template/Makefile#L46):
+
+```bash
+include ../proj.mk
+```
+
+with:
+
+```bash
+include ${CFU_ROOT}/proj/proj.mk
+```
+
+(it should be the last line of the `Makefile`)
+
 * `[2pt]` Commit the contents of the `cfu_proj` directory.
 
 ## Building the project
