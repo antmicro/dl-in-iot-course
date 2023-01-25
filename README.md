@@ -39,7 +39,7 @@ To build the SIF files from image definitions, run:
 
 ```
 cd environments
-sudo aptainer build development-environment.sif development-environment.def
+sudo apptainer build development-environment.sif development-environment.def
 cd ..
 ```
 
