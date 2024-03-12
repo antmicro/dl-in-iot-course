@@ -1,0 +1,14 @@
+apache-tvm
+matplotlib
+nni
+numpy
+onnx
+onnx_tf
+Pillow
+scikit_learn
+tensorflow==2.13.0
+tensorflow_model_optimization
+tflite
+torch
+torchvision
+tqdm
