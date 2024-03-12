@@ -14,6 +14,7 @@ class NativeModel(ModelTester):
     This tester verifies the work of the native TensorFlow model without any
     optimizations.
     """
+
     def prepare_model(self):
         self.model = tf.keras.models.load_model(str(self.modelpath))
         # TODO print model summary
@@ -36,7 +37,7 @@ class FP32Model(ModelTester):
     def preprocess_input(self, X):
         # since we only want to measure inference time, not tensor allocation,
         # we mode setting tensor to preprocess_input
-        self.model.set_tensor(self.model.get_input_details()[0]['index'], X)
+        self.model.set_tensor(self.model.get_input_details()[0]["index"], X)
 
     # TODO def run_inference(self):
 
@@ -47,12 +48,14 @@ class INT8Model(ModelTester):
     """
     This tester tests the performance of FP32 TensorFlow Lite model.
     """
+
     def __init__(
-            self,
-            dataset: PetDataset,
-            modelpath: Path,
-            originalmodel: Optional[Path] = None,
-            calibrationdatasetpercent: float = 0.5):
+        self,
+        dataset: PetDataset,
+        modelpath: Path,
+        originalmodel: Optional[Path] = None,
+        calibrationdatasetpercent: float = 0.5,
+    ):
         """
         Initializer for INT8Model.
 
@@ -76,9 +79,9 @@ class INT8Model(ModelTester):
     def optimize_model(self, originalmodel: Path):
         def calibration_dataset_generator():
             return self.dataset.calibration_dataset_generator(
-                self.calibrationdatasetpercent,
-                1234
+                self.calibrationdatasetpercent, 1234
             )
+
         # TODO finish implementation
 
     # TODO def prepare_model(self):
@@ -96,33 +99,21 @@ class ImbalancedINT8Model(INT8Model):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("--model-path", help="Path to the model file", type=Path)
+    parser.add_argument("--dataset-root", help="Path to the dataset file", type=Path)
     parser.add_argument(
-        '--model-path',
-        help='Path to the model file',
-        type=Path
+        "--download-dataset",
+        help="Download the dataset before training",
+        action="store_true",
     )
+    parser.add_argument("--results-path", help="Path to the results", type=Path)
     parser.add_argument(
-        '--dataset-root',
-        help='Path to the dataset file',
-        type=Path
-    )
-    parser.add_argument(
-        '--download-dataset',
-        help='Download the dataset before training',
-        action='store_true'
-    )
-    parser.add_argument(
-        '--results-path',
-        help='Path to the results',
-        type=Path
-    )
-    parser.add_argument(
-        '--test-dataset-fraction',
-        help='What fraction of the test dataset should be used for evaluation',
+        "--test-dataset-fraction",
+        help="What fraction of the test dataset should be used for evaluation",
         type=float,
-        default=1.0
+        default=1.0,
     )
 
     args = parser.parse_args()
@@ -134,11 +125,7 @@ if __name__ == '__main__':
     # test of the model executed natively
     tester = NativeModel(dataset, args.model_path)
     tester.prepare_model()
-    tester.test_inference(
-        args.results_path,
-        'native',
-        args.test_dataset_fraction
-    )
+    tester.test_inference(args.results_path, "native", args.test_dataset_fraction)
 
     # TODO uncomment tests for each implemented class to test its work
 

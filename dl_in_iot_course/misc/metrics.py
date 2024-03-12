@@ -30,10 +30,7 @@ def mean_precision(confusion_matrix: np.ndarray):
     -------
     float : mean precision value
     """
-    return np.mean(
-        confusion_matrix.diagonal() /
-        np.sum(confusion_matrix, axis=1)
-    )
+    return np.mean(confusion_matrix.diagonal() / np.sum(confusion_matrix, axis=1))
 
 
 def mean_sensitivity(confusion_matrix: np.ndarray):
@@ -49,10 +46,7 @@ def mean_sensitivity(confusion_matrix: np.ndarray):
     -------
     float : Mean sensitivity
     """
-    return np.mean(
-        confusion_matrix.diagonal() /
-        np.sum(confusion_matrix, axis=0)
-    )
+    return np.mean(confusion_matrix.diagonal() / np.sum(confusion_matrix, axis=0))
 
 
 def g_mean(confusion_matrix: np.ndarray):
@@ -68,7 +62,9 @@ def g_mean(confusion_matrix: np.ndarray):
     -------
     float : G-Mean value
     """
-    return np.float_power(np.prod(
-        np.array(confusion_matrix).diagonal() /
-        np.sum(confusion_matrix, axis=0)
-    ), 1.0 / np.array(confusion_matrix).shape[0])
+    return np.float_power(
+        np.prod(
+            np.array(confusion_matrix).diagonal() / np.sum(confusion_matrix, axis=0)
+        ),
+        1.0 / np.array(confusion_matrix).shape[0],
+    )

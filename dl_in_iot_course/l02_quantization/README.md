@@ -50,7 +50,7 @@ It requires implementing methods for:
 * `[2pt]` Finish the `ImbalancedINT8Model` class:
 
     * Implement `optimize_model` method, where the `calibration_dataset_generator` will take all examples for objects with 5 class and use them for calibration:
-        
+
         * Use `self.dataset.dataX` and `self.dataset.dataY` to extract all inputs for a particular class.
         * Remember to use self.dataset.prepare_input_sample method.
 
@@ -64,7 +64,7 @@ It requires implementing methods for:
   ```
 
   In the `build/results` directory, the script will create:
-    
+
     * `<prefix>-metrics.md` file - contains basic metrics, such as accuracy, precision, sensitivity or G-Mean, along with inference time
     * `<prefix>-confusion-matrix.png` file - contains visualization of confusion matrix for the model evaluation.
   Those files will be created for:

@@ -19,7 +19,7 @@ import tempfile  # noqa: F401
 import tensorflow as tf  # noqa: F401
 
 # For training use 'cuda', for evaluation purposes use 'cpu'
-DEVICE = 'cpu'
+DEVICE = "cpu"
 # Initial learning rate for Adam optimizer
 TRAINING_LEARNING_RATE = 0.001
 FINETUNE_LEARNING_RATE = 0.0001
@@ -40,6 +40,7 @@ class FashionClassifier(nn.Module):
     PyTorch module containing a simple classifier for
     Fashion MNIST dataset.
     """
+
     def __init__(self):
         """
         Creates all model layers and structures.
@@ -71,14 +72,15 @@ class FashionClassifier(nn.Module):
         return x
 
     def train_model(
-            self,
-            optimizer,
-            criterion,
-            epochs,
-            trainloader,
-            valloader=None,
-            lastbestmodelpath=None,
-            evaluate_model=True):
+        self,
+        optimizer,
+        criterion,
+        epochs,
+        trainloader,
+        valloader=None,
+        lastbestmodelpath=None,
+        evaluate_model=True,
+    ):
         """
         Trains the model on given training dataset.
 
@@ -119,13 +121,17 @@ class FashionClassifier(nn.Module):
 
                 losssum += loss
                 losscount += 1
-                bar.set_description(f'train epoch: {epoch:3}')
-            print(f'Mean loss for epoch {epoch}:  {losssum.data.cpu().numpy() / losscount}')  # noqa: E501
+                bar.set_description(f"train epoch: {epoch:3}")
+            print(
+                f"Mean loss for epoch {epoch}:  {losssum.data.cpu().numpy() / losscount}"
+            )  # noqa: E501
             if evaluate_model:
                 acc = self.evaluate(valloader)
-                print(f'Val accuracy for epoch {epoch}:  {acc}')
+                print(f"Val accuracy for epoch {epoch}:  {acc}")
                 if acc > best_acc:
-                    print(f'ACCURACY improved for epoch {epoch}:  prev={best_acc}, curr={acc}')  # noqa: E501
+                    print(
+                        f"ACCURACY improved for epoch {epoch}:  prev={best_acc}, curr={acc}"
+                    )  # noqa: E501
                     best_acc = acc
                     if lastbestmodelpath:
                         torch.save(self.state_dict(), lastbestmodelpath)
@@ -154,7 +160,7 @@ class FashionClassifier(nn.Module):
         numinferences = 0
         with torch.no_grad():
             bar = tqdm(dataloader)
-            for (images, labels) in bar:
+            for images, labels in bar:
                 images = images.to(self.device)
                 labels = labels.to(self.device)
                 start = time.perf_counter()
@@ -164,11 +170,11 @@ class FashionClassifier(nn.Module):
                 _, predicted = torch.max(outputs, 1)
                 total += labels.size(0)
                 correct += (predicted == labels).sum().item()
-                bar.set_description(f'valid [correct={correct}, total={total}')
+                bar.set_description(f"valid [correct={correct}, total={total}")
         acc = 100 * correct / total
         meaninference = 1000.0 * inferencetimesum / numinferences
-        print(f'Achieved accuracy:  {acc} %')
-        print(f'Mean inference time:  {meaninference} ms')
+        print(f"Achieved accuracy:  {acc} %")
+        print(f"Mean inference time:  {meaninference} ms")
         return acc
 
     def convert_to_onnx(self, outputpath):
@@ -202,50 +208,41 @@ def convert_onnx_to_tflite(onnx_file, tflite_file):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--input-model',
-        type=Path,
-        help='Path to the PyTorch model',
-        required=True
+        "--input-model", type=Path, help="Path to the PyTorch model", required=True
     )
     parser.add_argument(
-        '--backup-model',
+        "--backup-model",
         type=Path,
-        help='Path where the best current model will be saved',
-        required=True
+        help="Path where the best current model will be saved",
+        required=True,
     )
     parser.add_argument(
-        '--final-model',
+        "--final-model",
         type=Path,
-        help='Path where the final model will be saved',
-        required=True
+        help="Path where the final model will be saved",
+        required=True,
+    )
+    parser.add_argument("--onnx-model", type=Path, help="Path to ONNX file with model")
+    parser.add_argument(
+        "--tflite-model", type=Path, help="Path to TFLite file with model"
     )
     parser.add_argument(
-        '--onnx-model',
+        "--dataset-path",
         type=Path,
-        help='Path to ONNX file with model'
+        help="Path where train and test dataset should be stored",
+        required=True,
     )
     parser.add_argument(
-        '--tflite-model',
-        type=Path,
-        help='Path to TFLite file with model'
-    )
-    parser.add_argument(
-        '--dataset-path',
-        type=Path,
-        help='Path where train and test dataset should be stored',
-        required=True
-    )
-    parser.add_argument(
-        '--train-model',
-        action='store_true',
-        help='Trains the model from scratch and saves it to input_model path'
+        "--train-model",
+        action="store_true",
+        help="Trains the model from scratch and saves it to input_model path",
     )
 
     args = parser.parse_args()
 
     # create train/test dataset paths
-    traindatasetpath = args.dataset_path / 'train'
-    testdatasetpath = args.dataset_path / 'test'
+    traindatasetpath = args.dataset_path / "train"
+    testdatasetpath = args.dataset_path / "test"
 
     traindatasetpath.mkdir(parents=True, exist_ok=True)
     testdatasetpath.mkdir(parents=True, exist_ok=True)
@@ -258,7 +255,7 @@ def main():
         traindatasetpath,
         train=True,
         download=True,
-        transform=transforms.Compose([transforms.ToTensor()])
+        transform=transforms.Compose([transforms.ToTensor()]),
     )
 
     # compute mean/std for the train dataset
@@ -269,12 +266,14 @@ def main():
 
     # add transforms for dataset data
     # introduce basic data augmentations
-    dataset.transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomAffine(5, scale=(0.95, 1.05)),
-        transforms.Normalize(mean, std)
-    ])
+    dataset.transform = transforms.Compose(
+        [
+            transforms.ToTensor(),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomAffine(5, scale=(0.95, 1.05)),
+            transforms.Normalize(mean, std),
+        ]
+    )
 
     # split training dataset into training and validation dataset
     trainset, valset = torch.utils.data.random_split(dataset, [40000, 20000])
@@ -284,32 +283,24 @@ def main():
         testdatasetpath,
         train=False,
         download=True,
-        transform=transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize(mean, std)
-        ])
+        transform=transforms.Compose(
+            [transforms.ToTensor(), transforms.Normalize(mean, std)]
+        ),
     )
 
-    print(f'No. of samples: train={len(trainset)}, val={len(valset)}, test={len(tdataset)}')  # noqa: E501
+    print(
+        f"No. of samples: train={len(trainset)}, val={len(valset)}, test={len(tdataset)}"
+    )  # noqa: E501
 
     # define dataloaders for each dataset
     trainloader = torch.utils.data.DataLoader(
-        trainset,
-        batch_size=BATCH_SIZE,
-        num_workers=0,
-        shuffle=True
+        trainset, batch_size=BATCH_SIZE, num_workers=0, shuffle=True
     )
     valloader = torch.utils.data.DataLoader(
-        valset,
-        batch_size=1,
-        num_workers=0,
-        shuffle=False
+        valset, batch_size=1, num_workers=0, shuffle=False
     )
     testloader = torch.utils.data.DataLoader(
-        tdataset,
-        batch_size=1,
-        num_workers=0,
-        shuffle=False
+        tdataset, batch_size=1, num_workers=0, shuffle=False
     )
 
     # define loss
@@ -317,10 +308,7 @@ def main():
 
     # train the model or load from file
     if args.train_model:
-        toptimizer = torch.optim.Adam(
-            model.parameters(),
-            lr=TRAINING_LEARNING_RATE
-        )
+        toptimizer = torch.optim.Adam(model.parameters(), lr=TRAINING_LEARNING_RATE)
         model.train_model(
             toptimizer,
             criterion,
@@ -328,22 +316,19 @@ def main():
             trainloader,
             valloader,
             args.backup_model,
-            True
+            True,
         )
         # use the model with the highest accuracy
         shutil.copy(str(args.backup_model), str(args.input_model))
 
     # load the model
-    input_data = torch.load(
-        args.input_model,
-        map_location=torch.device(DEVICE)
-    )
+    input_data = torch.load(args.input_model, map_location=torch.device(DEVICE))
     model.load_state_dict(input_data, strict=False)
 
     # print the model
-    print('ORIGINAL MODEL')
+    print("ORIGINAL MODEL")
     print(model)
-    print('ORIGINAL MODEL QUALITY')
+    print("ORIGINAL MODEL QUALITY")
     model.evaluate(testloader)
 
     # create a NNI-traced optimizer using the Adam optimizer
@@ -356,13 +341,7 @@ def main():
 
     def trainer(mod, opt, crit):
         model.train_model(
-            opt,
-            crit,
-            MEASUREMENTS_EPOCHS,
-            trainloader,
-            valloader,
-            None,
-            False
+            opt, crit, MEASUREMENTS_EPOCHS, trainloader, valloader, None, False
         )
 
     # define APoZRankPruner
@@ -374,18 +353,18 @@ def main():
     _, masks = pruner.compress()
 
     # show pruned weights
-    print('Pruned weights:')
+    print("Pruned weights:")
     pruner.show_pruned_weights()
-    print('Unwrapping the model...')
+    print("Unwrapping the model...")
     pruner._unwrap_model()
-    print('Unwrapped model')
+    print("Unwrapped model")
 
     # TODO create ModelSpeedup object with model, masks
     # dummy_input and run speedup_model
 
-    print('MODEL AFTER PRUNING')
+    print("MODEL AFTER PRUNING")
     print(model)
-    print('PRUNED MODEL QUALITY BEFORE FINE-TUNING')
+    print("PRUNED MODEL QUALITY BEFORE FINE-TUNING")
     model.evaluate(testloader)
 
     # TODO define fine-tune optimizer
@@ -397,12 +376,12 @@ def main():
         FINE_TUNE_EPOCHS,
         trainloader,
         valloader,
-        args.backup_model
+        args.backup_model,
     )
 
     torch.save(model.state_dict(), args.final_model)
 
-    print('PRUNED MODEL QUALITY AFTER FINE-TUNING')
+    print("PRUNED MODEL QUALITY AFTER FINE-TUNING")
     model.evaluate(testloader)
 
     if args.onnx_model:
@@ -412,5 +391,5 @@ def main():
         convert_onnx_to_tflite(args.onnx_model, args.tflite_model)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -15,11 +15,12 @@ class ModelTester(object):
     """
 
     def __init__(
-            self,
-            dataset: PetDataset,
-            modelpath: Path,
-            originalmodel: Optional[Path] = None,
-            logdir: Optional[Path] = None):
+        self,
+        dataset: PetDataset,
+        modelpath: Path,
+        originalmodel: Optional[Path] = None,
+        logdir: Optional[Path] = None,
+    ):
         """
         Initializer for ModelTester.
 
@@ -68,10 +69,8 @@ class ModelTester(object):
         return result
 
     def test_inference(
-            self,
-            resultspath: Path,
-            prefix: str,
-            testdatasetpercentage: float = 0.3):
+        self, resultspath: Path, prefix: str, testdatasetpercentage: float = 0.3
+    ):
         """
         Runs inference on test data and evaluates the model.
 
@@ -92,11 +91,10 @@ class ModelTester(object):
             dataY = self.dataset.testY
         else:
             _, dataX, _, dataY = self.dataset.split_dataset(
-                percentage=testdatasetpercentage,
-                usetest=True
+                percentage=testdatasetpercentage, usetest=True
             )
         # for each entry in the test dataset
-        for X, y in tqdm(list(zip(dataX, dataY)), desc=f'evaluating {prefix}'):
+        for X, y in tqdm(list(zip(dataX, dataY)), desc=f"evaluating {prefix}"):
             # preprocess data
             Xp = self.dataset.prepare_input_sample(X)
             yp = self.dataset.prepare_output_sample(y)
@@ -109,22 +107,24 @@ class ModelTester(object):
         # draw the final confusion matrix
         draw_confusion_matrix(
             self.dataset.confusion_matrix,
-            resultspath / f'{prefix}-confusion-matrix.png',
-            'Confusion matrix',
-            self.dataset.classnames
+            resultspath / f"{prefix}-confusion-matrix.png",
+            "Confusion matrix",
+            self.dataset.classnames,
         )
         # generate a file
-        with open(resultspath / f'{prefix}-metrics.md', 'w') as metfile:
+        with open(resultspath / f"{prefix}-metrics.md", "w") as metfile:
             conf_matrix = self.dataset.confusion_matrix
-            metfile.writelines([
-                f'Model type: {prefix}\n\n',
-                f'* Accuracy: {metrics.accuracy(conf_matrix)}\n',
-                f'* Mean precision: {metrics.mean_precision(conf_matrix)}\n',
-                f'* Mean sensitivity: {metrics.mean_sensitivity(conf_matrix)}\n',  # noqa: E501
-                f'* G-Mean: {metrics.g_mean(conf_matrix)}\n',
-                f'* Mean inference time: {np.mean(self.timemeasurements[1:])} ms\n'  # noqa: E501
-                f'* Top-5 percentage: {self.dataset.top_5_count / self.dataset.total}\n'  # noqa: E501
-            ])
+            metfile.writelines(
+                [
+                    f"Model type: {prefix}\n\n",
+                    f"* Accuracy: {metrics.accuracy(conf_matrix)}\n",
+                    f"* Mean precision: {metrics.mean_precision(conf_matrix)}\n",
+                    f"* Mean sensitivity: {metrics.mean_sensitivity(conf_matrix)}\n",  # noqa: E501
+                    f"* G-Mean: {metrics.g_mean(conf_matrix)}\n",
+                    f"* Mean inference time: {np.mean(self.timemeasurements[1:])} ms\n"  # noqa: E501
+                    f"* Top-5 percentage: {self.dataset.top_5_count / self.dataset.total}\n",  # noqa: E501
+                ]
+            )
 
     def preprocess_input(self, X: Any):
         """

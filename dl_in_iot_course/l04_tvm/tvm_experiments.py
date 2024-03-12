@@ -14,15 +14,16 @@ from dl_in_iot_course.misc.modeltester import ModelTester
 
 class TVMModel(ModelTester):
     def __init__(
-            self,
-            dataset: PetDataset,
-            modelpath: Path,
-            originalmodel: Optional[Path] = None,
-            logdir: Optional[Path] = None,
-            target: str = 'llvm',
-            target_host: Optional[str] = None,
-            opt_level: int = 3,
-            use_nchw_layout: bool = False):
+        self,
+        dataset: PetDataset,
+        modelpath: Path,
+        originalmodel: Optional[Path] = None,
+        logdir: Optional[Path] = None,
+        target: str = "llvm",
+        target_host: Optional[str] = None,
+        opt_level: int = 3,
+        use_nchw_layout: bool = False,
+    ):
         """
         Initializer for ModelTester.
 
@@ -70,7 +71,7 @@ class TVMModel(ModelTester):
         pass
 
     def optimize_model(self, originalmodel: Path):
-        with open(originalmodel, 'rb') as f:
+        with open(originalmodel, "rb") as f:
             modelfile = f.read()
 
         tflite_model = tflite.Model.GetRootAsModel(modelfile, 0)  # noqa: F841
@@ -81,24 +82,24 @@ class TVMModel(ModelTester):
         input_details = interpreter.get_input_details()[0]
         output_details = interpreter.get_output_details()[0]
 
-        if input_details['dtype'] in [np.int8, np.uint8]:
+        if input_details["dtype"] in [np.int8, np.uint8]:
             self.quantized = True
-            self.input_dtype = input_details['dtype']
-            self.in_scale, self.in_zero_point = input_details['quantization']
-            self.output_dtype = output_details['dtype']
-            self.out_scale, self.out_zero_point = output_details[
-                'quantization'
-            ]
+            self.input_dtype = input_details["dtype"]
+            self.in_scale, self.in_zero_point = input_details["quantization"]
+            self.output_dtype = output_details["dtype"]
+            self.out_scale, self.out_zero_point = output_details["quantization"]
 
         transforms = [relay.transform.RemoveUnusedFunctions()]
 
         if self.use_nchw_layout:
             transforms.append(
-                relay.transform.ConvertLayout({
-                    "nn.conv2d": ['NCHW', 'default'],
-                    # TODO add support for converting layout in quantized
-                    # network
-                })
+                relay.transform.ConvertLayout(
+                    {
+                        "nn.conv2d": ["NCHW", "default"],
+                        # TODO add support for converting layout in quantized
+                        # network
+                    }
+                )
             )
 
         seq = transform.Sequential(transforms)  # noqa: F841
@@ -107,54 +108,41 @@ class TVMModel(ModelTester):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--fp32-model-path',
-        help='Path to the FP32 TFLite model file',
+        "--fp32-model-path",
+        help="Path to the FP32 TFLite model file",
         type=Path,
-        required=True
+        required=True,
     )
     parser.add_argument(
-        '--int8-model-path',
-        help='Path to the INT8 TFLite model file',
+        "--int8-model-path",
+        help="Path to the INT8 TFLite model file",
         type=Path,
-        required=True
+        required=True,
     )
     parser.add_argument(
-        '--dataset-root',
-        help='Path to the dataset file',
-        type=Path,
-        required=True
+        "--dataset-root", help="Path to the dataset file", type=Path, required=True
     )
     parser.add_argument(
-        '--download-dataset',
-        help='Download the dataset before training',
-        action='store_true'
+        "--download-dataset",
+        help="Download the dataset before training",
+        action="store_true",
     )
     parser.add_argument(
-        '--results-path',
-        help='Path to the results',
-        type=Path,
-        required=True
+        "--results-path", help="Path to the results", type=Path, required=True
     )
     parser.add_argument(
-        '--test-dataset-fraction',
-        help='What fraction of the test dataset should be used for evaluation',
+        "--test-dataset-fraction",
+        help="What fraction of the test dataset should be used for evaluation",
         type=float,
-        default=1.0
+        default=1.0,
     )
     parser.add_argument(
-        '--target',
-        help='The device to run the model on',
-        type=str,
-        default='llvm'
+        "--target", help="The device to run the model on", type=str, default="llvm"
     )
-    parser.add_argument(
-        '--target-host',
-        help='The host CPU type',
-        default=None
-    )
+    parser.add_argument("--target-host", help="The host CPU type", default=None)
 
     args = parser.parse_args()
 

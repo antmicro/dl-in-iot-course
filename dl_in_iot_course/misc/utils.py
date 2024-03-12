@@ -11,12 +11,6 @@ class DownloadProgressBar(tqdm):
 
 def download_url(url, output_path):
     with DownloadProgressBar(
-            unit='B',
-            unit_scale=True,
-            miniters=1,
-            desc=url.split('/')[-1]) as t:
-        urllib.request.urlretrieve(
-            url,
-            filename=output_path,
-            reporthook=t.update_to
-        )
+        unit="B", unit_scale=True, miniters=1, desc=url.split("/")[-1]
+    ) as t:
+        urllib.request.urlretrieve(url, filename=output_path, reporthook=t.update_to)

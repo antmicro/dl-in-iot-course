@@ -12,13 +12,14 @@ from matplotlib import gridspec
 
 
 def draw_confusion_matrix(
-        confusion_matrix: np.ndarray,
-        outpath: Optional[Path],
-        title: str,
-        class_names: List[str],
-        cmap=None,
-        figsize: Optional[Tuple] = None,
-        dpi: Optional[int] = None):
+    confusion_matrix: np.ndarray,
+    outpath: Optional[Path],
+    title: str,
+    class_names: List[str],
+    cmap=None,
+    figsize: Optional[Tuple] = None,
+    dpi: Optional[int] = None,
+):
     """
     Creates a confusion matrix plot.
 
@@ -41,7 +42,7 @@ def draw_confusion_matrix(
         The dpi of the plot
     """
     if cmap is None:
-        cmap = plt.get_cmap('BuPu')
+        cmap = plt.get_cmap("BuPu")
 
     confusion_matrix = np.array(confusion_matrix, dtype=np.float32, copy=True)
 
@@ -50,8 +51,7 @@ def draw_confusion_matrix(
     correctactual = correctactual.reshape(1, len(class_names))
 
     # compute precision
-    correctpredicted = \
-        confusion_matrix.diagonal() / confusion_matrix.sum(axis=0)
+    correctpredicted = confusion_matrix.diagonal() / confusion_matrix.sum(axis=0)
     correctpredicted = correctpredicted.reshape(len(class_names), 1)
 
     # compute overall accuracy
@@ -70,19 +70,15 @@ def draw_confusion_matrix(
     # create axes
     fig = plt.figure(figsize=figsize, dpi=dpi)
     gs = gridspec.GridSpec(len(class_names) + 1, len(class_names) + 1)
-    axConfMatrix = fig.add_subplot(gs[0:len(class_names), 0:len(class_names)])
+    axConfMatrix = fig.add_subplot(gs[0 : len(class_names), 0 : len(class_names)])
     axPredicted = fig.add_subplot(
-        gs[len(class_names), 0:len(class_names)],
-        sharex=axConfMatrix
+        gs[len(class_names), 0 : len(class_names)], sharex=axConfMatrix
     )
     axActual = fig.add_subplot(
-        gs[0:len(class_names), len(class_names)],
-        sharey=axConfMatrix
+        gs[0 : len(class_names), len(class_names)], sharey=axConfMatrix
     )
     axTotal = fig.add_subplot(
-        gs[len(class_names), len(class_names)],
-        sharex=axActual,
-        sharey=axPredicted
+        gs[len(class_names), len(class_names)], sharex=axActual, sharey=axPredicted
     )
 
     # define ticks for classes
@@ -90,112 +86,118 @@ def draw_confusion_matrix(
 
     # configure and draw confusion matrix
     axConfMatrix.set_xticks(ticks)
-    axConfMatrix.set_xticklabels(class_names, fontsize='large', rotation=90)
+    axConfMatrix.set_xticklabels(class_names, fontsize="large", rotation=90)
     axConfMatrix.set_yticks(ticks)
-    axConfMatrix.set_yticklabels(class_names, fontsize='large')
-    axConfMatrix.set_xlabel('Actual class', fontsize='x-large')
-    axConfMatrix.set_ylabel('Predicted class', fontsize='x-large')
+    axConfMatrix.set_yticklabels(class_names, fontsize="large")
+    axConfMatrix.set_xlabel("Actual class", fontsize="x-large")
+    axConfMatrix.set_ylabel("Predicted class", fontsize="x-large")
     img = axConfMatrix.imshow(
         confusion_matrix,
-        interpolation='nearest',
+        interpolation="nearest",
         cmap=cmap,
-        aspect='auto',
+        aspect="auto",
         vmin=0.0,
-        vmax=1.0
+        vmax=1.0,
     )
-    axConfMatrix.xaxis.set_ticks_position('top')
-    axConfMatrix.xaxis.set_label_position('top')
+    axConfMatrix.xaxis.set_ticks_position("top")
+    axConfMatrix.xaxis.set_label_position("top")
 
     # add percentages for confusion matrix
-    for i, j in itertools.product(
-            range(len(class_names)),
-            range(len(class_names))):
+    for i, j in itertools.product(range(len(class_names)), range(len(class_names))):
         txt = axConfMatrix.text(
-            j, i,
-            ('100' if confusion_matrix[i, j] == 1.0
-                else f'{100.0 * confusion_matrix[i,j]:3.1f}'),
-            ha='center',
-            va='center',
-            color='black',
-            fontsize='medium')
-        txt.set_path_effects([
-            patheffects.withStroke(linewidth=5, foreground='w')
-        ])
+            j,
+            i,
+            (
+                "100"
+                if confusion_matrix[i, j] == 1.0
+                else f"{100.0 * confusion_matrix[i,j]:3.1f}"
+            ),
+            ha="center",
+            va="center",
+            color="black",
+            fontsize="medium",
+        )
+        txt.set_path_effects([patheffects.withStroke(linewidth=5, foreground="w")])
 
     # configure and draw sensitivity percentages
     axPredicted.set_xticks(ticks)
     axPredicted.set_yticks([0])
-    axPredicted.set_xlabel('Sensitivity', fontsize='large')
+    axPredicted.set_xlabel("Sensitivity", fontsize="large")
     axPredicted.imshow(
         correctactual,
-        interpolation='nearest',
-        cmap='RdYlGn',
-        aspect='auto',
+        interpolation="nearest",
+        cmap="RdYlGn",
+        aspect="auto",
         vmin=0.0,
-        vmax=1.0
+        vmax=1.0,
     )
     for i in range(len(class_names)):
         txt = axPredicted.text(
-            i, 0,
-            ('100' if correctactual[0, i] == 1.0
-                else f'{100.0 * correctactual[0, i]:3.1f}'),
-            ha='center',
-            va='center',
-            color='black',
-            fontsize='medium')
-        txt.set_path_effects([
-            patheffects.withStroke(linewidth=5, foreground='w')
-        ])
+            i,
+            0,
+            (
+                "100"
+                if correctactual[0, i] == 1.0
+                else f"{100.0 * correctactual[0, i]:3.1f}"
+            ),
+            ha="center",
+            va="center",
+            color="black",
+            fontsize="medium",
+        )
+        txt.set_path_effects([patheffects.withStroke(linewidth=5, foreground="w")])
 
     # configure and draw precision percentages
     axActual.set_xticks([0])
     axActual.set_yticks(ticks)
-    axActual.set_ylabel('Precision', fontsize='large')
-    axActual.yaxis.set_label_position('right')
+    axActual.set_ylabel("Precision", fontsize="large")
+    axActual.yaxis.set_label_position("right")
     axActual.imshow(
         correctpredicted,
-        interpolation='nearest',
-        cmap='RdYlGn',
-        aspect='auto',
+        interpolation="nearest",
+        cmap="RdYlGn",
+        aspect="auto",
         vmin=0.0,
-        vmax=1.0
+        vmax=1.0,
     )
     for i in range(len(class_names)):
         txt = axActual.text(
-            0, i,
-            ('100' if correctpredicted[i, 0] == 1.0
-                else f'{100.0 * correctpredicted[i, 0]:3.1f}'),
-            ha='center',
-            va='center',
-            color='black',
-            fontsize='medium')
-        txt.set_path_effects([
-            patheffects.withStroke(linewidth=5, foreground='w')
-        ])
+            0,
+            i,
+            (
+                "100"
+                if correctpredicted[i, 0] == 1.0
+                else f"{100.0 * correctpredicted[i, 0]:3.1f}"
+            ),
+            ha="center",
+            va="center",
+            color="black",
+            fontsize="medium",
+        )
+        txt.set_path_effects([patheffects.withStroke(linewidth=5, foreground="w")])
 
     # configure and draw total accuracy
     axTotal.set_xticks([0])
     axTotal.set_yticks([0])
-    axTotal.set_xlabel('Accuracy', fontsize='large')
+    axTotal.set_xlabel("Accuracy", fontsize="large")
     axTotal.imshow(
         np.array([[accuracy]]),
-        interpolation='nearest',
-        cmap='RdYlGn',
-        aspect='auto',
+        interpolation="nearest",
+        cmap="RdYlGn",
+        aspect="auto",
         vmin=0.0,
-        vmax=1.0
+        vmax=1.0,
     )
     txt = axTotal.text(
-        0, 0,
-        f'{100 * accuracy:3.1f}',
-        ha='center',
-        va='center',
-        color='black',
-        fontsize='medium'
+        0,
+        0,
+        f"{100 * accuracy:3.1f}",
+        ha="center",
+        va="center",
+        color="black",
+        fontsize="medium",
     )
-    txt.set_path_effects([
-        patheffects.withStroke(linewidth=5, foreground='w')
-    ])
+    txt.set_path_effects([patheffects.withStroke(linewidth=5, foreground="w")])
 
     # disable axes for other matrices than confusion matrix
     for a in (axPredicted, axActual, axTotal):
@@ -204,24 +206,18 @@ def draw_confusion_matrix(
 
     # draw colorbar for confusion matrix
     cbar = fig.colorbar(
-        img,
-        ax=[axPredicted, axConfMatrix, axActual, axTotal],
-        shrink=0.5,
-        pad=0.1
+        img, ax=[axPredicted, axConfMatrix, axActual, axTotal], shrink=0.5, pad=0.1
     )
     for t in cbar.ax.get_yticklabels():
-        t.set_fontsize('medium')
-    suptitlehandle = fig.suptitle(
-        f'{title} (ACC={accuracy:.5f})',
-        fontsize='xx-large'
-    )
+        t.set_fontsize("medium")
+    suptitlehandle = fig.suptitle(f"{title} (ACC={accuracy:.5f})", fontsize="xx-large")
     if outpath is None:
         plt.show()
     else:
         plt.savefig(
             outpath,
             dpi=dpi,
-            bbox_inches='tight',
+            bbox_inches="tight",
             bbox_extra_artists=[suptitlehandle],
-            pad_inches=0.1
+            pad_inches=0.1,
         )

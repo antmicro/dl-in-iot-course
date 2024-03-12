@@ -40,10 +40,8 @@ class PetDataset(object):
     The affinity of images to classes is taken from annotations, but the class
     IDs are starting from 0 instead of 1, as in the annotations.
     """
-    def __init__(
-            self,
-            root: Path,
-            download_dataset: bool = False):
+
+    def __init__(self, root: Path, download_dataset: bool = False):
         """
         Prepares all structures and data required for providing data samples.
 
@@ -75,28 +73,24 @@ class PetDataset(object):
 
         Those lists will store file paths and classes for objects.
         """
-        with open(self.root / 'annotations' / 'trainval.txt', 'r') as datadesc:
+        with open(self.root / "annotations" / "trainval.txt", "r") as datadesc:
             for line in datadesc:
-                if line.startswith('#'):
+                if line.startswith("#"):
                     continue
-                fields = line.split(' ')
-                self.dataX.append(
-                    str(self.root / 'images' / (fields[0] + '.jpg'))
-                )
+                fields = line.split(" ")
+                self.dataX.append(str(self.root / "images" / (fields[0] + ".jpg")))
                 self.dataY.append(int(fields[1]) - 1)
-                clsname = fields[0].rsplit('_', 1)[0]
-                if not self.dataY[-1] in self.classnames:
+                clsname = fields[0].rsplit("_", 1)[0]
+                if self.dataY[-1] not in self.classnames:
                     self.classnames[self.dataY[-1]] = clsname
                 assert self.classnames[self.dataY[-1]] == clsname
             self.numclasses = len(self.classnames)
-        with open(self.root / 'annotations' / 'test.txt', 'r') as datadesc:
+        with open(self.root / "annotations" / "test.txt", "r") as datadesc:
             for line in datadesc:
-                if line.startswith('#'):
+                if line.startswith("#"):
                     continue
-                fields = line.split(' ')
-                self.testX.append(
-                    str(self.root / 'images' / (fields[0] + '.jpg'))
-                )
+                fields = line.split(" ")
+                self.testX.append(str(self.root / "images" / (fields[0] + ".jpg")))
                 self.testY.append(int(fields[1]) - 1)
         self.reset_metrics()
         self.mean, self.std = self.get_input_mean_std()
@@ -115,11 +109,11 @@ class PetDataset(object):
         Downloads the dataset to the root directory defined in the constructor.
         """
         self.root.mkdir(parents=True, exist_ok=True)
-        imgs = 'https://www.robots.ox.ac.uk/~vgg/data/pets/data/images.tar.gz'
-        anns = 'https://www.robots.ox.ac.uk/~vgg/data/pets/data/annotations.tar.gz'  # noqa: E501
+        imgs = "https://www.robots.ox.ac.uk/~vgg/data/pets/data/images.tar.gz"
+        anns = "https://www.robots.ox.ac.uk/~vgg/data/pets/data/annotations.tar.gz"  # noqa: E501
         with tempfile.TemporaryDirectory() as tmpdir:
-            tarimgspath = Path(tmpdir) / 'dataset.tar.gz'
-            tarannspath = Path(tmpdir) / 'annotations.tar.gz'
+            tarimgspath = Path(tmpdir) / "dataset.tar.gz"
+            tarannspath = Path(tmpdir) / "annotations.tar.gz"
             download_url(imgs, tarimgspath)
             download_url(anns, tarannspath)
             tf = tarfile.open(tarimgspath)
@@ -134,10 +128,8 @@ class PetDataset(object):
         return (self.dataX, self.dataY)
 
     def split_dataset(
-            self,
-            percentage: float = 0.25,
-            seed: int = 12345,
-            usetest: bool = False):
+        self, percentage: float = 0.25, seed: int = 12345, usetest: bool = False
+    ):
         """
         Extracts validation dataset from the train dataset.
 
@@ -161,14 +153,13 @@ class PetDataset(object):
             test_size=percentage,
             random_state=seed,
             shuffle=True,
-            stratify=self.testY if usetest else self.dataY
+            stratify=self.testY if usetest else self.dataY,
         )
         return (dataxtrain, dataxvalid, dataytrain, datayvalid)
 
     def calibration_dataset_generator(
-            self,
-            percentage: float = 0.25,
-            seed: int = 12345):
+        self, percentage: float = 0.25, seed: int = 12345
+    ):
         """
         Creates generator for the calibration data.
 
@@ -180,7 +171,7 @@ class PetDataset(object):
             The seed for random state
         """
         _, X, _, _ = self.split_dataset(percentage, seed)
-        for x in tqdm(X, desc='calibration'):
+        for x in tqdm(X, desc="calibration"):
             yield [self.prepare_input_sample(x)]
 
     def evaluate(self, predictions: List, truth: List):
@@ -217,7 +208,9 @@ class PetDataset(object):
             the standardization values for a given train dataset.
             Tuple of two variables describing mean and std values.
         """
-        return np.array([0.485, 0.456, 0.406], dtype='float32'), np.array([0.229, 0.224, 0.225], dtype='float32')  # noqa: E501
+        return np.array([0.485, 0.456, 0.406], dtype="float32"), np.array(
+            [0.229, 0.224, 0.225], dtype="float32"
+        )  # noqa: E501
 
     def get_class_names(self) -> List[str]:
         """
@@ -243,7 +236,7 @@ class PetDataset(object):
         np.ndarray : Preprocessed input
         """
         img = Image.open(sample)
-        img = img.convert('RGB')
+        img = img.convert("RGB")
         img = img.resize((224, 224))
         npimg = np.array(img).astype(np.float32) / 255.0
         npimg = (npimg - self.mean) / self.std

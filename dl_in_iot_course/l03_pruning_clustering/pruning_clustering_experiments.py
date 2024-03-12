@@ -9,7 +9,6 @@ from dl_in_iot_course.misc.modeltester import ModelTester
 
 
 class TFMOTOptimizedModel(ModelTester):
-
     def compress_and_fine_tune(self, originalmodel: Path):
         """
         Runs selected compression algorithm and fine-tunes the model.
@@ -44,31 +43,29 @@ class TFMOTOptimizedModel(ModelTester):
         self.batch_size = 8
         self.learning_rate = 0.00001
         self.epochs = 1
-        Xt, Xv, Yt, Yv = self.dataset.split_dataset(
-            0.4
-        )
+        Xt, Xv, Yt, Yv = self.dataset.split_dataset(0.4)
         Yt = list(self.dataset.onehotvectors[Yt])
         Yv = list(self.dataset.onehotvectors[Yv])
 
         # TensorFlow Dataset object for training
-        self.traindataset = tf.data.Dataset.from_tensor_slices((Xt, Yt)).map(
-            preprocess_input,
-            num_parallel_calls=tf.data.experimental.AUTOTUNE
-        ).batch(self.batch_size)
+        self.traindataset = (
+            tf.data.Dataset.from_tensor_slices((Xt, Yt))
+            .map(preprocess_input, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+            .batch(self.batch_size)
+        )
 
         # TensorFlow Dataset object for validation
-        self.validdataset = tf.data.Dataset.from_tensor_slices((Xv, Yv)).map(
-            preprocess_input,
-            num_parallel_calls=tf.data.experimental.AUTOTUNE
-        ).batch(self.batch_size)
+        self.validdataset = (
+            tf.data.Dataset.from_tensor_slices((Xv, Yv))
+            .map(preprocess_input, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+            .batch(self.batch_size)
+        )
 
         # loss function
         self.loss = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
         # Adam optimizer
-        self.optimizer = tf.keras.optimizers.Adam(
-            learning_rate=self.learning_rate
-        )
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
 
         # Categorical accuracy metric
         self.metrics = [tf.keras.metrics.CategoricalAccuracy()]
@@ -92,13 +89,15 @@ class ClusteredModel(TFMOTOptimizedModel):
     """
     This tester tests the performance of the clustered model.
     """
+
     def __init__(
-            self,
-            dataset: PetDataset,
-            modelpath: Path,
-            originalmodel: Optional[Path] = None,
-            logdir: Optional[Path] = None,
-            num_clusters: int = 16):
+        self,
+        dataset: PetDataset,
+        modelpath: Path,
+        originalmodel: Optional[Path] = None,
+        logdir: Optional[Path] = None,
+        num_clusters: int = 16,
+    ):
         """
         Initializer for ClusteredModel.
 
@@ -131,13 +130,15 @@ class PrunedModel(TFMOTOptimizedModel):
     """
     This tester tests the performance of the pruned model.
     """
+
     def __init__(
-            self,
-            dataset: PetDataset,
-            modelpath: Path,
-            originalmodel: Optional[Path] = None,
-            logdir: Optional[Path] = None,
-            target_sparsity: float = 0.3):
+        self,
+        dataset: PetDataset,
+        modelpath: Path,
+        originalmodel: Optional[Path] = None,
+        logdir: Optional[Path] = None,
+        target_sparsity: float = 0.3,
+    ):
         """
         Initializer for PrunedModel.
 
@@ -163,40 +164,26 @@ class PrunedModel(TFMOTOptimizedModel):
     def compress_and_fine_tune(self, originalmodel):
         self.epochs = 4
         self.sched = tfmot.sparsity.keras.ConstantSparsity(
-            self.target_sparsity,
-            begin_step=0,
-            end_step=1,
-            frequency=1)
+            self.target_sparsity, begin_step=0, end_step=1, frequency=1
+        )
         # TODO implement model pruning and fine-tuning
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("--model-path", help="Path to the model file", type=Path)
+    parser.add_argument("--dataset-root", help="Path to the dataset file", type=Path)
     parser.add_argument(
-        '--model-path',
-        help='Path to the model file',
-        type=Path
+        "--download-dataset",
+        help="Download the dataset before training",
+        action="store_true",
     )
+    parser.add_argument("--results-path", help="Path to the results", type=Path)
     parser.add_argument(
-        '--dataset-root',
-        help='Path to the dataset file',
-        type=Path
-    )
-    parser.add_argument(
-        '--download-dataset',
-        help='Download the dataset before training',
-        action='store_true'
-    )
-    parser.add_argument(
-        '--results-path',
-        help='Path to the results',
-        type=Path
-    )
-    parser.add_argument(
-        '--test-dataset-fraction',
-        help='What fraction of the test dataset should be used for evaluation',
+        "--test-dataset-fraction",
+        help="What fraction of the test dataset should be used for evaluation",
         type=float,
-        default=1.0
+        default=1.0,
     )
 
     args = parser.parse_args()

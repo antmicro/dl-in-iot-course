@@ -16,17 +16,18 @@ from dl_in_iot_course.l04_tvm.tvm_experiments import TVMModel
 
 class TVMFineTunedModel(TVMModel):
     def __init__(
-            self,
-            dataset: PetDataset,
-            modelpath: Path,
-            optlogpath: Path,
-            graphoptlogpath: Path,
-            originalmodel: Optional[Path] = None,
-            logdir: Optional[Path] = None,
-            target: str = 'llvm',
-            target_host: Optional[str] = None,
-            opt_level: int = 3,
-            tunertype: str = 'xgb'):
+        self,
+        dataset: PetDataset,
+        modelpath: Path,
+        optlogpath: Path,
+        graphoptlogpath: Path,
+        originalmodel: Optional[Path] = None,
+        logdir: Optional[Path] = None,
+        target: str = "llvm",
+        target_host: Optional[str] = None,
+        opt_level: int = 3,
+        tunertype: str = "xgb",
+    ):
         """
         Initializer for TVMFineTunedModel.
 
@@ -67,7 +68,8 @@ class TVMFineTunedModel(TVMModel):
             target,
             target_host,
             opt_level,
-            True)
+            True,
+        )
 
     def get_tuner(self, task):
         """
@@ -82,14 +84,14 @@ class TVMFineTunedModel(TVMModel):
         -------
         tvm.autotvm.tuner.Tuner : Tuner for the task
         """
-        assert self.tunertype in ['xgb', 'ga', 'random', 'gridsearch']
-        if self.tunertype == 'xgb':
-            return XGBTuner(task, loss_type='rank')
-        elif self.tunertype == 'ga':
+        assert self.tunertype in ["xgb", "ga", "random", "gridsearch"]
+        if self.tunertype == "xgb":
+            return XGBTuner(task, loss_type="rank")
+        elif self.tunertype == "ga":
             return GATuner(task, pop_size=50)
-        elif self.tunertype == 'random':
+        elif self.tunertype == "random":
             return RandomTuner(task)
-        elif self.tunertype == 'gridsearch':
+        elif self.tunertype == "gridsearch":
             return GridSearchTuner(task)
 
     def tune_kernels(self, tasks, measure_option):
@@ -123,7 +125,7 @@ class TVMFineTunedModel(TVMModel):
         assert NotImplementedError
 
     def optimize_model(self, originalmodel: Path):
-        with open(originalmodel, 'rb') as f:
+        with open(originalmodel, "rb") as f:
             modelfile = f.read()
 
         tflite_model = tflite.Model.GetRootAsModel(modelfile, 0)  # noqa: F841
@@ -134,22 +136,22 @@ class TVMFineTunedModel(TVMModel):
         input_details = interpreter.get_input_details()[0]
         output_details = interpreter.get_output_details()[0]
 
-        self.input_dtype = input_details['dtype']
-        self.input_shape = input_details['shape']
-        self.input_name = input_details['name']
-        self.output_dtype = output_details['dtype']
+        self.input_dtype = input_details["dtype"]
+        self.input_shape = input_details["shape"]
+        self.input_name = input_details["name"]
+        self.output_dtype = output_details["dtype"]
         # we do not quantized models in this converter
-        assert input_details['dtype'] not in [np.int8, np.uint8]
+        assert input_details["dtype"] not in [np.int8, np.uint8]
 
-        mod, params = relay.frontend.from_tflite(
-            tflite_model
-        )
+        mod, params = relay.frontend.from_tflite(tflite_model)
 
         transforms = [relay.transform.RemoveUnusedFunctions()]
         transforms.append(
-            relay.transform.ConvertLayout({
-                "nn.conv2d": ['NCHW', 'default'],
-            })
+            relay.transform.ConvertLayout(
+                {
+                    "nn.conv2d": ["NCHW", "default"],
+                }
+            )
         )
 
         seq = transform.Sequential(transforms)  # noqa: F841
@@ -160,62 +162,50 @@ class TVMFineTunedModel(TVMModel):
         measure_option = autotvm.measure_option(  # noqa: F841
             builder=autotvm.LocalBuilder(),
             runner=autotvm.LocalRunner(
-                number=4,
-                repeat=10,
-                enable_cpu_cache_flush=True
-            )
+                number=4, repeat=10, enable_cpu_cache_flush=True
+            ),
         )
 
         # TODO finish implementation
         assert NotImplementedError
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--fp32-model-path',
-        help='Path to the FP32 TFLite model file',
+        "--fp32-model-path",
+        help="Path to the FP32 TFLite model file",
         type=Path,
-        required=True
+        required=True,
     )
     parser.add_argument(
-        '--dataset-root',
-        help='Path to the dataset file',
-        type=Path,
-        required=True
+        "--dataset-root", help="Path to the dataset file", type=Path, required=True
     )
     parser.add_argument(
-        '--download-dataset',
-        help='Download the dataset before training',
-        action='store_true'
+        "--download-dataset",
+        help="Download the dataset before training",
+        action="store_true",
     )
     parser.add_argument(
-        '--results-path',
-        help='Path to the results',
-        type=Path,
-        required=True
+        "--results-path", help="Path to the results", type=Path, required=True
     )
     parser.add_argument(
-        '--test-dataset-fraction',
-        help='What fraction of the test dataset should be used for evaluation',
+        "--test-dataset-fraction",
+        help="What fraction of the test dataset should be used for evaluation",
         type=float,
-        default=1.0
+        default=1.0,
     )
     parser.add_argument(
-        '--target',
-        help='The device to run the model on',
+        "--target",
+        help="The device to run the model on",
         type=str,
-        default='llvm -mcpu=core-avx2'
+        default="llvm -mcpu=core-avx2",
     )
+    parser.add_argument("--target-host", help="The host CPU type", default=None)
     parser.add_argument(
-        '--target-host',
-        help='The host CPU type',
-        default=None
-    )
-    parser.add_argument(
-        '--tuner-type',
-        help='Type of the tuner to use for kernel optimizations',
-        default='xgb'
+        "--tuner-type",
+        help="Type of the tuner to use for kernel optimizations",
+        default="xgb",
     )
 
     args = parser.parse_args()
@@ -226,18 +216,14 @@ if __name__ == '__main__':
 
     tester = TVMFineTunedModel(
         dataset,
-        args.results_path / f'{args.fp32_model_path.stem}.tvm-tune.so',
-        args.results_path / f'{args.fp32_model_path.stem}.tvm-tune.kernellog',
-        args.results_path / f'{args.fp32_model_path.stem}.tvm-tune.graphlog',
+        args.results_path / f"{args.fp32_model_path.stem}.tvm-tune.so",
+        args.results_path / f"{args.fp32_model_path.stem}.tvm-tune.kernellog",
+        args.results_path / f"{args.fp32_model_path.stem}.tvm-tune.graphlog",
         args.fp32_model_path,
-        args.results_path / 'tvm-tune',
+        args.results_path / "tvm-tune",
         args.target,
         args.target_host,
         3,
-        args.tuner_type
+        args.tuner_type,
     )
-    tester.test_inference(
-        args.results_path,
-        'tvm-tune',
-        args.test_dataset_fraction
-    )
+    tester.test_inference(args.results_path, "tvm-tune", args.test_dataset_fraction)
