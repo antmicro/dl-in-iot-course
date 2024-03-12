@@ -1,8 +1,8 @@
 # Optimization of Deep Learning applications for IoT devices - Course tasks
 
-Copyright (c) 2021-2022 [Antmicro](https://www.antmicro.com)
+Copyright (c) 2021-2024 [Antmicro](https://www.antmicro.com)
 
-This repository contains tasks for laboratories for the "Optimization of Deep Learning applications for IoT devices" course.
+This repository contains tasks for laboratories for the "Optimization of Neural Network applications for IoT devices" course.
 
 ## Course classes
 
