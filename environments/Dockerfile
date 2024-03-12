@@ -1,73 +1,51 @@
-FROM archlinux:latest
+FROM debian:bookworm
 
-ENV PIPINST 'python -m pip install --no-cache-dir --upgrade'
+ENV INST 'env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends'
+ENV PIPINST 'python3 -m pip install --no-cache-dir --upgrade'
 
-RUN pacman --noconfirm -Syu
-RUN pacman --noconfirm -Sy \
-    blas \
-    cblas \
-    clang \
+RUN apt-get update && $INST \
+    build-essential \
     cmake \
     curl \
-    fd \
-    flake8 \
+    fd-find \
+    ffmpeg \
+    fonts-lato \
+    g++ \
     gcc \
     git \
-    gtest \
-    ipython \
+    git-lfs \
+    libglfw3 \
+    libglfw3-dev \
+    libglib2.0-0 \
+    libgomp1 \
+    libopenblas-dev \
+    libprotoc-dev \
+    libpython3-dev \
+    libtinfo5 \
+    libtinfo-dev \
     llvm \
-    make \
-    protobuf \
-    pybind11 \
-    python-cffi \
-    python-cloudpickle \
-    python-jinja \
-    python-matplotlib \
-    python-numpy \
-    python-opencv \
-    python-pip \
-    python-psutil \
-    python-pytest \
-    python-pytorch \
-    python-scikit-learn \
-    python-setuptools \
-    python-tornado \
-    python-tqdm \
-    tmux \
-    vim \
+    llvm-dev \
+    mono-complete \
+    procps \
+    protobuf-compiler \
+    python3 \
+    python3-dev \
+    python3-opencv \
+    python3-pip \
+    python3-venv \
     wget \
-    zip
+    zip \
+    && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN rm /usr/lib/python3.11/EXTERNALLY-MANAGED
+RUN $PIPINST pip setuptools PyYAML cmake flit_core
 
 RUN $PIPINST \
-    cloudpickle \
-    flatbuffers \
-    jupyterlab \
-    netron \
-    nni \
-    notebook \
-    onnx \
-    ptipython \
-    tensorflow==2.10 \
-    tensorflow-addons==0.18.0 \
-    tensorflow-model-optimization==0.7.2 \
-    tensorflow-probability==0.18.0 \
-    tflite \
-    torchvision==0.13.1 \
-    "xgboost>=1.1.0,<1.6.0"
+    flake8 \
+    pre-commit \
+    pydocstyle \
+    ruff
 
-RUN $PIPINST git+https://github.com/onnx/onnx-tensorflow.git@v1.10.0
-RUN $PIPINST git+https://github.com/onnx/tensorflow-onnx.git@v1.13.0
+COPY requirements.txt /tmp/requirements.txt
 
-COPY cpu-config.cmake /tvm-config.cmake
-RUN cd / && git clone --recursive https://github.com/apache/tvm.git -b v0.10.0 /tvm && \
-    cd /tvm && mkdir build && cd build && \
-    mv /tvm-config.cmake /tvm/build/config.cmake && \
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
-    make -j`nproc` && \
-    make install && \
-    ldconfig && \
-    CONDA_BUILD=yes $PIPINST -e /tvm/python && \
-    cd / && \
-    rm -rf /tvm/build
-
-ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+RUN $PIPINST -r /tmp/requirements.txt
