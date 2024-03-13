@@ -16,6 +16,12 @@ Please follow the links to go to the list of tasks:
 * [Lab 06 - Fine-tuning of model and operations in Apache TVM](dl_in_iot_course/l06_tvm_fine_tuning)
 * [Lab 07 - Accelerating ML models on FPGAs with TFLite Micro and CFU Playground](cfu-playground)
 
+Each README provides instructions on:
+
+* What to do in the tasks
+* How to run experiments
+* How to prepare the summary
+
 ## Cloning the repository
 
 `NOTE:` [Git LFS tool](https://git-lfs.github.com/) is required to pull large files, such as models.
@@ -32,37 +38,51 @@ cd ..
 
 ## Environment preparation
 
-To provide a consistent environment for running tasks, [Apptainer](https://apptainer.org/) and Docker image definitions are available in the [environments directory](environments/).
 
-To get started with the Apptainer environment, check the [Quick Start guide](https://apptainer.org/docs/user/main/quick_start.html) for installation and running steps.
+### Using Docker image
 
-To build the SIF files from image definitions, run:
+The recommended approach is to use a Docker image that provides all dependencies necessary for running tasks from the project.
 
-```
-cd environments
-sudo apptainer build development-environment.sif development-environment.def
-cd ..
-```
+The definition for the Docker image is located in [`environments` directory](./environments/Dockerfile).
 
-`NOTE:` Use `development-environment-gpu.def` definition for the GPU-enabled version of the image.
+To pull the built image, run:
 
-To start working in the container, run:
-
-```
-apptainer shell environments/development-environment.sif
+```bash
+docker pull ghcr.io/antmicro/dl-in-iot-course:latest
 ```
 
-To use the GPU-enabled container (only for NVIDIA with CUDA), run:
+To run it and automatically include the current workspace directory, you can run:
 
-```
-apptainer shell --nv environments/development-environment-gpu.sif
+```bash
+docker run -it --rm -v $(pwd):$(pwd) -w $(pwd) ghcr.io/antmicro/dl-in-iot-course:latest /bin/bash
 ```
 
-Singularity by default enables using GUI, makes all of the devices available from the container, and mounts the /home directory by default.
+From this point, you can run tasks for the project.
+
+### Using virtual environment
+
+The dependencies for tasks are provided in the `requirements.txt` file.
+To install them, first create a virtual environment with `venv` in project's directory:
+
+```bash
+python3 -m venv .venv
+```
+
+After this, activate the environment:
+
+```bash
+source ./.venv/bin/activate
+```
+
+And proceed with installing necessary dependencies:
+
+```bash
+pip3 install -r requirements.txt
+```
 
 ## Running the executable scripts in the repository
 
-In order to handle submodules easily, all of the executable scripts should be started from the root of the repository, i.e.:
+In order to handle Python modules for the project easily, all of the executable scripts should be started from the root of the repository, i.e.:
 
 ```
 python3 -m dl_in_iot_course.l02_quantization.quantization_experiments -h
