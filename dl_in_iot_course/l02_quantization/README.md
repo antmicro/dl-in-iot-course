@@ -30,6 +30,7 @@ It requires implementing methods for:
     * in `optimize_model`, load the trained model, create a `tf.lite.TFLiteConverter` object from the model, convert it to the TFLite model without any optimizations and save results to the file under `self.modelpath` path.
     * in `prepare_model`, create a `tf.lite.Interpreter` for the model saved in `self.modelpath` path.
       I'd suggest setting a `num_threads` parameter here to the number of threads available in the CPU to significantly boost the inference process.
+      You can use e.g. `multiprocessing` module to collect number of available cores.
       Remember to allocate tensors (there is a method for it).
     * in `run_inference` method, invoke the model.
     * in `postprocess_outputs`, implement the method for getting the output tensor (check out `preprocess_input` method for hints on how to do it).
@@ -99,11 +100,9 @@ Additional factors:
 
 * `[2pt]` Git history quality
 
-`NOTE:` the INT8 models may actually perform slower than FP32 models on x86_64 CPUs.
+`NOTE:` There is no need to include the models in the repository.
 
-`NOTE:` there is no need to include the models in the repository.
-
-`NOTE:` confusion matrix shows clearly if there are any issues with the optimized model.
+`NOTE:` Confusion matrix shows clearly if there are any issues with the optimized model.
 If the confusion matrix is almost random (with no significantly higher values along the diagonal) - there are possible issues with the model, usually within preprocessing step (make sure to use `scale`, `zero_point` parameters and to convert the input data to `int8` type).
 
 ## Resources
