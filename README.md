@@ -14,6 +14,7 @@ Please follow the links to go to the list of tasks:
 * [Lab 04 - Introduction to Apache TVM](dl_in_iot_course/l04_tvm)
 * [Lab 05 - Implementing a TensorFlow Lite delegate](dl_in_iot_course/l05_tflite_delegate)
 * [Lab 06 - Fine-tuning of model and operations in Apache TVM](dl_in_iot_course/l06_tvm_fine_tuning)
+* [Lab 07 - Accelerating ML models on FPGAs with TFLite Micro and CFU Playground](cfu-playground)
 
 ## Cloning the repository
 
