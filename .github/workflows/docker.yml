@@ -1,0 +1,33 @@
+name: Build and publish Docker image for the project
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  Docker:
+    if: github.repository == 'antmicro/dl-in-iot-course'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel previous run
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build . -f environments/Dockerfile --tag ghcr.io/${{ github.repository }}
+      - name: Login to registry
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - name: Push image to registry
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: docker push ghcr.io/${{ github.repository }}
