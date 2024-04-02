@@ -8,6 +8,7 @@ Pillow
 scikit_learn
 tensorflow==2.13.0
 tensorflow_model_optimization
+tensorflow_probability==0.21.0
 tflite
 torch
 torchvision
