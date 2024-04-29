@@ -14,6 +14,7 @@ RUN apt-get update && $INST \
     gcc \
     git \
     git-lfs \
+    libeigen3-dev \
     libglfw3 \
     libglfw3-dev \
     libglib2.0-0 \
