@@ -72,6 +72,7 @@ TfLiteStatus EigenDelegateKernel::Init(TfLiteContext* context, const TfLiteDeleg
     outputs_.resize(params->nodes_to_replace->size);
     builtin_code_.resize(params->nodes_to_replace->size);
     nodes_.resize(params->nodes_to_replace->size);
+    intermediatedata.clear();
     for (int i = 0; i < params->nodes_to_replace->size; i++)
     {
         const int node_index = params->nodes_to_replace->data[i];
@@ -99,12 +100,6 @@ TfLiteStatus EigenDelegateKernel::Init(TfLiteContext* context, const TfLiteDeleg
         builtin_code_[i] = delegated_node_registration->builtin_code;
         nodes_[i] = delegated_node;
     }
-    return kTfLiteOk;
-}
-
-TfLiteStatus EigenDelegateKernel::Prepare(TfLiteContext* context, TfLiteNode* node)
-{
-    intermediatedata.clear();
 #ifdef DEBUG
     printf("BEFORE ALLOCATION (tensor id, data address, dims address)\n");
     for (int i = 0; i < context->tensors_size; i++)
@@ -142,6 +137,11 @@ TfLiteStatus EigenDelegateKernel::Prepare(TfLiteContext* context, TfLiteNode* no
         );
     }
 #endif // DEBUG
+    return kTfLiteOk;
+}
+
+TfLiteStatus EigenDelegateKernel::Prepare(TfLiteContext* context, TfLiteNode* node)
+{
     return kTfLiteOk;
 }
 
