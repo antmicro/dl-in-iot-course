@@ -1,6 +1,6 @@
-From 8a5959bbb08706f73946db4dd8007e7fde2a2065 Mon Sep 17 00:00:00 2001
+From 4ccf5152db7ec01bef42f9a430b1909e6e05f0d3 Mon Sep 17 00:00:00 2001
 From: Grzegorz Latosinski <glatosinski@antmicro.com>
-Date: Tue, 27 Dec 2022 23:36:30 +0100
+Date: Wed, 8 May 2024 09:30:43 +0200
 Subject: [PATCH 2/2] common: perf: Added simple cycle counter
 
 Signed-off-by: Grzegorz Latosinski <glatosinski@antmicro.com>
@@ -23,10 +23,10 @@ index 60f2ca92..553a3a44 100644
  void perf_print_human(uint64_t n) {
    if (n > 9999999) {
 diff --git a/common/src/perf.h b/common/src/perf.h
-index dae94b42..6145e70e 100644
+index bfd822fc..4f8ca40e 100644
 --- a/common/src/perf.h
 +++ b/common/src/perf.h
-@@ -30,6 +30,7 @@ extern "C" {
+@@ -33,6 +33,7 @@ extern "C" {
  #define NUM_PERF_COUNTERS 0
  #endif
  
@@ -35,7 +35,7 @@ index dae94b42..6145e70e 100644
  extern unsigned CFU_start_counts[NUM_PERF_COUNTERS];
  
 diff --git a/common/src/tflite.cc b/common/src/tflite.cc
-index 8991bc97..d6f0e963 100644
+index 906fbda4..05850ce2 100644
 --- a/common/src/tflite.cc
 +++ b/common/src/tflite.cc
 @@ -251,6 +251,7 @@ void tflite_classify() {
@@ -50,10 +50,10 @@ index 8991bc97..d6f0e963 100644
  #endif
    perf_print_value(end - start);  // Possible overflow is intentional here.
    printf(" cycles total\n");
-+  printf("Tracked cycles:  %lu\n", cycle_counter);
++  printf("Tracked cycles: %lu\n", cycle_counter);
  }
  
  int8_t* get_input() { return interpreter->input(0)->data.int8; }
 -- 
-2.38.1
+2.43.0
 

@@ -4,7 +4,7 @@ git clone --recursive https://github.com/google/CFU-Playground.git
 
 cd CFU-Playground
 
-git checkout 328263b92abc8b607e02812db4d386b2759c2041
+git checkout 0612528704a5d177235b3321d3ada2f2946c5e30
 
 git am ../*.patch
 
