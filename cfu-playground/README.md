@@ -27,6 +27,8 @@ cd CFU-Playground/
 cd -
 ```
 
+`NOTE:` The log `Info: vivado not found in path.` can be ignored - we will not use Vivado in this demo.
+
 Thirdly, create a project from the template in the `cfu-playground/cfu_proj` directory:
 
 ```bash
