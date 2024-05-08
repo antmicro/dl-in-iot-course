@@ -13,11 +13,33 @@ cd cfu-playground/
 ./clone-cfu-playground.sh
 ```
 
+`NOTE`: The cloning step is recommended outside the Docker environment.
+
 This script will clone the CFU Playground, set the commit to the last tested release and apply changes to allow external projects to be built within CFU Playground workflow.
 
 Secondly, prepare the environment for development.
 
-`NOTE`: To speed up things, use development environment located in [`environments/cfu-playground-environment.def`](../environments/cfu-playground-environment.def) - it has most of dependencies ready to use.
+`NOTE`: To speed up things, you can use the course's Docker image:
+
+```bash
+docker pull ghcr.io/antmicro/dl-in-iot-course:latest
+```
+
+Since for this demo the access to display is recommended, you can start the Docker container with:
+
+```bash
+xhost +local:
+docker run -it --rm \
+    -v /tmp/.X11-unix/:/tmp/.X11-unix/ \
+    -e DISPLAY=$DISPLAY \
+    -e XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR \
+    -v $(pwd):$(pwd) \
+    -w $(pwd) \
+    --net=host \
+    ghcr.io/antmicro/dl-in-iot-course:latest /bin/bash
+```
+
+The `xhost +local:` will allow Docker container to use display, while `DISPLAY`, `XDG_RUNTIME_DIR` and `/tmp/.X11-unix` from host allow to seamlessly run graphical applications from container.
 
 Regardless of using container or not, go to cloned repository and run setup script:
 
@@ -27,7 +49,7 @@ cd CFU-Playground/
 cd -
 ```
 
-`NOTE:` The log `Info: vivado not found in path.` can be ignored - we will not use Vivado in this demo.
+`NOTE`: The log `Info: vivado not found in path.` can be ignored - we will not use Vivado in this demo.
 
 Thirdly, create a project from the template in the `cfu-playground/cfu_proj` directory:
 
@@ -59,6 +81,8 @@ Since our project is out of the CFU Playground tree, we firstly need to set up s
 export CFU_ROOT=$(pwd)/CFU-Playground
 export PROJ_DIR=$(pwd)/cfu_proj
 ```
+
+`NOTE`: Those variables need to be set every time a fresh environment (fresh Docker container or shell) is created.
 
 Now, we do not have a hardware to test the design on, so we will simulate it using [Renode](https://renode.io/).
 For more details on the framework check out [Renode docs](https://renode.readthedocs.io/en/latest/).
