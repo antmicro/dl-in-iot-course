@@ -45,10 +45,12 @@ Regardless of using container or not, go to cloned repository and run setup scri
 
 ```bash
 cd CFU-Playground/
+git config --global --add safe.directory $(pwd)
 ./scripts/setup
 cd -
 ```
 
+`NOTE`: The `git config` command is required in Docker container to disable dubious ownership error.
 `NOTE`: The log `Info: vivado not found in path.` can be ignored - we will not use Vivado in this demo.
 
 Thirdly, create a project from the template in the `cfu-playground/cfu_proj` directory:
