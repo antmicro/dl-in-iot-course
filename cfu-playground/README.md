@@ -486,7 +486,7 @@ def make_cfu():
 To use our CFU function (`cfu_op0`), we need to include `cfu.h` file in our `conv.h` file:
 
 ```cpp
-#include "cfu.f"
+#include "cfu.h"
 ```
 
 This requires more extensive changes - we need to replace loop iterating over output channels with:
