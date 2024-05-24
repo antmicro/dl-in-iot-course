@@ -13,3 +13,4 @@ tflite
 torch
 torchvision
 tqdm
+xgboost==1.7.6
