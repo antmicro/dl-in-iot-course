@@ -88,22 +88,13 @@ export PROJ_DIR=$(pwd)/cfu_proj
 
 Now, we do not have a hardware to test the design on, so we will simulate it using [Renode](https://renode.io/).
 For more details on the framework check out [Renode docs](https://renode.readthedocs.io/en/latest/).
-From the perspective of the [Step-by-step guide](https://cfu-playground.readthedocs.io/en/latest/step-by-step.html) we only need to change every:
 
-```bash
-cd cfu_proj/
-make prog
-make load
-```
-
-With:
+You can build and run the simulation with:
 
 ```bash
 cd cfu_proj
 make renode
 ```
-
-To work with the simulated solution.
 
 From now on, let's work in the created `cfu_proj` directory.
 
@@ -145,7 +136,12 @@ It means that everything is implemented correctly.
 
 To quit the simulation, run `quit` command in the main Renode console.
 
+`NOTE`: In case the GUI applications do not appear, please check [Running simulation without access to GUI application](#running-simulation-without-access-to-gui-application).
+
 * `[5pt]` Please create a commit adding `first-run.txt` file to the repository.
+
+`NOTE`: Originally, you would run `make prog` and `make load` to build the project dependencies, synthesize the design, load the design to FPGA and run the application on actual hardware.
+For more details, check original [Step-by-step guide](https://cfu-playground.readthedocs.io/en/latest/step-by-step.html).
 
 ## Profiling the CONV2D operation
 
@@ -564,6 +560,60 @@ For:
 * CFU operations
 
 To see how those software and hardware alterations improved overall execution of a simple model.
+
+## Running simulation without access to GUI application
+
+`NOTE`: Steps here are only necessary when no GUI is available in your environment (either you run solution from SSH, you run Docker container without display configured, e.g. in Windows or Mac OS).
+
+In case the dedicated terminals can't be started for Renode, `make renode` will start Renode simulation and display the main Renode shell.
+From this shell, you can control the simulation process.
+Still, to run performance tests for the assignment, you also need to access PTY terminal for the simulated device, to request specific model and run golden tests.
+For this, we need a simulated UART device attached to our Docker container, and a separate shell that will connect to this UART with `picocom`.
+
+To do so, follow the steps:
+
+* Open new bash session in the same Docker container (you can skip those steps if you don't use Docker container)
+
+    * First of, run `docker ps` and determine which container runs your current session (the container with the course's image)
+    * After determining the name of the container (`<container-name>`), run:
+      ```bash
+      docker exec -it <container-name> /bin/bash
+      ```
+    * Check if `picocom` is present in the container (e.g. if `which picocom` returns any path).
+      If not, install it with `apt-get update && apt-get install picocom`.
+* From this point, you should have two bash shells:
+    * One with `make renode` running, with `digilent_arty` prompt
+    * One ready to run `picocom` to communicate via UART with simulated PTY terminal
+* In the `digilent_arty` terminal, run:
+  ```
+  emulation CreateUartPtyTerminal "uart" "/tmp/uart"
+  connector Connect sysbus.uart uart
+  ```
+  The first command will create a PTY device in the host machine (Docker container) under `/tmp/uart`, aliased as `uart` within Renode simulation.
+  The second command will attach UART from device's sysbus (`sysbus.uart`) to a given `uart` alias, mimicking connection of the simulated Digilent Arty device to the host device.
+* In the end, in the second terminal, run:
+  ```
+  picocom -b 115200 /tmp/uart
+  ```
+  to start communication with the simulated device via UART (`-b 115200` means setting baud rate to 115200 bps).
+* From this point, you can select model and golden tests in the device's prompt.
+
+Regarding `emulation` and `connector` commands, if you built the entire project at least once, you can:
+
+* Enter created `cfu_proj` directory
+* Copy the generated Renode script:
+  ```bash
+  mkdir renode
+  cp build/renode/digilent_arty.resc renode/digilent_arty.resc
+  ```
+* Add following lines to the end of the newly created `renode/digilent_arty.resc`:
+  ```
+  emulation CreateUartPtyTerminal "uart" "/tmp/uart"
+  connector Connect sysbus.uart uart
+  ```
+* With such addition, with each consecutive build the Renode script in `build/renode/digilent_arty.resc` will be the same as in the newly created file, creating `/tmp/uart` on host (Docker container) by default.
+
+`NOTE`: You will have to run `picocom` for every new session of tests, since the device will be detached, but the shell running `picocom` can be left without changes.
 
 ## Resources
 
