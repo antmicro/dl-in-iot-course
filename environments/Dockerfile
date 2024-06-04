@@ -53,6 +53,7 @@ RUN apt-get update && $INST \
     mono-devel \
     ninja-build \
     openocd \
+    picocom \
     policykit-1 \
     procps \
     protobuf-compiler \
