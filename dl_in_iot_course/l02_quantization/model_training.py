@@ -83,7 +83,7 @@ class PetClassifier(object):
         )
 
         self.model.compile(
-            optimizer=tf.keras.optimizers.Adam(lr=learning_rate),
+            optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
             loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True),
             metrics=[tf.keras.metrics.CategoricalAccuracy()],
         )
