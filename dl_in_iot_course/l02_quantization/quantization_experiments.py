@@ -23,7 +23,7 @@ class NativeModel(ModelTester):
         self.X = X
 
     def run_inference(self):
-        return self.model.predict(self.X)
+        return self.model.predict(self.X, verbose=0)
 
 
 class FP32Model(ModelTester):
