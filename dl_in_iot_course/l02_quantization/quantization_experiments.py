@@ -124,7 +124,6 @@ if __name__ == "__main__":
 
     # test of the model executed natively
     tester = NativeModel(dataset, args.model_path)
-    tester.prepare_model()
     tester.test_inference(args.results_path, "native", args.test_dataset_fraction)
 
     # TODO uncomment tests for each implemented class to test its work
@@ -135,7 +134,6 @@ if __name__ == "__main__":
     #     args.results_path / f'{args.model_path.stem}.fp32.tflite',
     #     args.model_path
     # )
-    # tester.prepare_model()
     # tester.test_inference(
     #     args.results_path,
     #     'tflite-fp32',
@@ -150,7 +148,6 @@ if __name__ == "__main__":
     #         args.model_path,
     #         calibsize
     #     )
-    #     tester.prepare_model()
     #     tester.test_inference(
     #         args.results_path,
     #         f'tflite-int8-{calibsize}',
@@ -163,7 +160,6 @@ if __name__ == "__main__":
     #     args.results_path / f'{args.model_path.stem}.imbint8.tflite',
     #     args.model_path
     # )
-    # tester.prepare_model()
     # tester.test_inference(
     #     args.results_path,
     #     'tflite-imbint8',
