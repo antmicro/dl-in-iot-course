@@ -110,7 +110,7 @@ def draw_confusion_matrix(
             (
                 "100"
                 if confusion_matrix[i, j] == 1.0
-                else f"{100.0 * confusion_matrix[i,j]:3.1f}"
+                else f"{100.0 * confusion_matrix[i, j]:3.1f}"
             ),
             ha="center",
             va="center",

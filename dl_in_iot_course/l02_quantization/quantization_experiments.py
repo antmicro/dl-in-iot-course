@@ -30,6 +30,7 @@ class FP32Model(ModelTester):
     """
     This tester tests the performance of FP32 TensorFlow Lite model.
     """
+
     # TODO def optimize_model(self, originalmodel: Path):
 
     # TODO def prepare_model(self):
