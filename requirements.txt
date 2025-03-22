@@ -13,4 +13,5 @@ tflite
 torch
 torchvision
 tqdm
+ai-edge-litert
 xgboost==1.7.6
