@@ -23,12 +23,30 @@ It requires implementing methods for:
 
 ## Tasks
 
+The tasks below can be implemented using either `tf.lite.Interpreter` "legacy" runtime, or new `ai_edge_litert.interpreter.Interpreter` runtime.
+Both variants of `Interpreter` use the same API, so in general it is a straightforward replacement.
+The changes appear in the format of the Keras's models.
+In `./models` directory of the project there are two "native" models:
+
+* `pet-dataset-tensorflow.h5` - trained using TensorFlow 2.19 (should be supported by versions 2.16 onwards)
+* `pet-dataset-tensorflow-2-13.h5` - trained using TensorFlow 2.11 (should be support by versions up to 2.15)
+
+In case of any problems please notify the tutor.
+
+Tasks:
+
+* `[2pt]` Learn about your hardware - it is important to know the target platform you will run your models on.
+  It will become especially important in the future tasks.
+  For now, let's determine the following aspects (write them in the summary):
+
+  * The CPU present in the platform: `lscpu` or `cat /proc/cpuinfo`
+  * The RAM present in the platform, e.g. `lshw -c memory` (many other approaches are available)
 * Go over the [quantization_experiments script](quantization_experiments.py) and check what it does (go to methods from other modules to get the better understanding on how the solution works).
 * `[1pt]` In `NativeModel` class, in the `prepare_model` method, add printing summary of the model (there is a dedicated method for this in TensorFlow models) - check out the number of parameters in the model.
 * `[4pt]` Finish the `FP32Model` class:
 
     * in `optimize_model`, load the trained model, create a `tf.lite.TFLiteConverter` object from the model, convert it to the TFLite model without any optimizations and save results to the file under `self.modelpath` path.
-    * in `prepare_model`, create a `tf.lite.Interpreter` for the model saved in `self.modelpath` path.
+    * in `prepare_model`, create a `tf.lite.Interpreter` (or `ai_edge_litert.interpreter.Interpreter`) for the model saved in `self.modelpath` path.
       I'd suggest setting a `num_threads` parameter here to the number of threads available in the CPU to significantly boost the inference process.
       You can use e.g. `multiprocessing` module to collect number of available cores.
       Remember to allocate tensors (there is a method for it).
@@ -43,7 +61,7 @@ It requires implementing methods for:
         * use `calibration_dataset_generator` as `converter.representative_dataset`,
         * use `tf.int8` as inference input and output type.
         * in general, set following members of the converter object: `optimizations`, `representative_dataset`, `target_spec.supported_ops`, `inference_input_type` and `inference_output_type`
-    * Implement `prepare_model`, `run_inference`
+    * Implement `prepare_model`, `run_inference` following the same flow as above
     * Implement `preprocess_input` and `postprocess_outputs` methods:
 
         * remember to quantize the inputs and dequantize the outputs (`scale` and `zero_point` parameters are present in `self.model.get_input_details()[0]['quantization']` field, respectively)!
@@ -55,14 +73,32 @@ It requires implementing methods for:
         * Use `self.dataset.dataX` and `self.dataset.dataY` to extract all inputs for a particular class.
         * Remember to use self.dataset.prepare_input_sample method.
 
-* In the main script, uncomment all already supported classes and run it (it may take some time):
+* The main script can be executed like so:
 
   ```
   python3 -m dl_in_iot_course.l02_quantization.quantization_experiments \
         --model-path models/pet-dataset-tensorflow.h5 \
         --dataset-root build/pet-dataset/ \
-        --results-path build/results
+        --results-path build/results --tasks <space-separated-list-of-tasks-to-run>
   ```
+
+  Where `--tasks` is a space-separated list of models to run.
+  Possible variants here are:
+
+  * `all` - runs all models (will fail if any model is not fully implemented)
+  * `native` - run model using native framework (default)
+  * `tflite-fp32` - runs model using TensorFlow Lite (or LiteRT) with FP32 precision
+  * `tflite-int8-<percentage>` - quantizes model using `<percentage>` of the training dataset for calibration (0.01, 0.08, 0.3, 0.8) values are available
+  * `tflite-int8-all` - runs all variants of quantized models with balanced calibration datasets
+  * `tflite-imbint8` - runs quantization and evaluation of model using imbalanced dataset
+
+  The above can be provided as a list to run only selected variants.
+
+  `NOTE:` To download the dataset, add `--download-dataset` flag.
+
+  `NOTE:` If the evaluation takes too long, reduce the test dataset size by setting `--test-dataset-fraction` to some lower value, but inform about this in the Summary note.
+
+  `NOTE:` Due to Python's garbage collection, in some cases it'll be recommended on some platforms to run each model/task separately.
 
   In the `build/results` directory, the script will create:
 
@@ -75,12 +111,11 @@ It requires implementing methods for:
     * `tflite-int8-<calibsize>` - the model running in TFLite runtime with INT8 precision calibrated with `<calibsize>` fraction of training dataset,
     * `tflite-imbint8` - the model running in TFLite runtime with INT8 precision calibrated with samples for several classes.
 
-  `NOTE:` To download the dataset, add `--download-dataset` flag.
-
-  `NOTE:` If the evaluation takes too long, reduce the test dataset size by setting `--test-dataset-fraction` to some lower value, but inform about this in the Summary note.
-
 * Write a small summary for experiments containing:
 
+    * `[2pt]` Include information regarding CPU (`lscpu` or `cat /proc/cpuinfo` results) and information about available RAM and answer following questions:
+        * What is `CPU(s)` count - is it number of CPUs, cores or something else?
+        * What are Flags in the results and what can they tell us about the platform in terms of Edge AI deployment?
     * `[1pt]` Number of parameters in the model (in total),
     * `[1pt]` Size of FP32 TFLite model, and size of the INT8 model - compare the size reduction (check file sizes),
     * For each experiment include:
@@ -101,6 +136,8 @@ Additional factors:
 * `[2pt]` Git history quality
 
 `NOTE:` There is no need to include the models in the repository.
+
+`NOTE:` The performance of a given runtime depends heavily on chosen hardware.
 
 `NOTE:` Confusion matrix shows clearly if there are any issues with the optimized model.
 If the confusion matrix is almost random (with no significantly higher values along the diagonal) - there are possible issues with the model, usually within preprocessing step (make sure to use `scale`, `zero_point` parameters and to convert the input data to `int8` type).
