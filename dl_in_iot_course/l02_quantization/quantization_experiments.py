@@ -101,6 +101,58 @@ class ImbalancedINT8Model(INT8Model):
 
 
 if __name__ == "__main__":
+    tasks = {}
+
+    def native(dataset: PetDataset, args: argparse.Namespace):
+        # test of the model executed natively
+        tester = NativeModel(dataset, args.model_path)
+        tester.test_inference(args.results_path, "native", args.test_dataset_fraction)
+
+    tasks["native"] = native
+
+    def tflite_fp32(dataset: PetDataset, args: argparse.Namespace):
+        # test of the model executed with FP32 precision
+        tester = FP32Model(
+            dataset,
+            args.results_path / f"{args.model_path.stem}.fp32.tflite",
+            args.model_path,
+        )
+        tester.test_inference(
+            args.results_path, "tflite-fp32", args.test_dataset_fraction
+        )
+
+    tasks["tflite-fp32"] = tflite_fp32
+
+    def tflite_int8_X(dataset: PetDataset, args: argparse.Namespace, calibsize: float):
+        # test of the model executed with INT8 precision
+        tester = INT8Model(
+            dataset,
+            args.results_path / f"{args.model_path.stem}.int8-{calibsize}.tflite",  # noqa: E501
+            args.model_path,
+            calibsize,
+        )
+        tester.test_inference(
+            args.results_path, f"tflite-int8-{calibsize}", args.test_dataset_fraction
+        )
+
+    for calibration_size in [0.01, 0.08, 0.3, 0.8]:
+        tasks[f"tflite-int8-{calibration_size}"] = lambda dataset, args: tflite_int8_X(
+            dataset, args, calibration_size
+        )
+
+    def tflite_imbint8(dataset: PetDataset, args: argparse.Namespace):
+        # test of the model executed with imbalanced INT8 precision
+        tester = ImbalancedINT8Model(
+            dataset,
+            args.results_path / f"{args.model_path.stem}.imbint8.tflite",
+            args.model_path,
+        )
+        tester.test_inference(
+            args.results_path, "tflite-imbint8", args.test_dataset_fraction
+        )
+
+    tasks["tflite-imbint8"] = tflite_imbint8
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--model-path", help="Path to the model file", type=Path)
     parser.add_argument("--dataset-root", help="Path to the dataset file", type=Path)
@@ -116,53 +168,34 @@ if __name__ == "__main__":
         type=float,
         default=1.0,
     )
+    parser.add_argument(
+        "--tasks",
+        choices=list(tasks.keys()) + ["all", "tflite-int8-all"],
+        nargs="+",
+        default=["native"],
+    )
 
     args = parser.parse_args()
+
+    chosen_tasks = []
+
+    for task in args.tasks:
+        if task == "all":
+            chosen_tasks.extend([t for t in tasks.keys() if t not in chosen_tasks])
+        elif task == "tflite-int8-all":
+            chosen_tasks.extend(
+                [
+                    t
+                    for t in tasks.keys()
+                    if t not in chosen_tasks and t.startswith("tflite-int8")
+                ]
+            )
+        elif task not in chosen_tasks:
+            chosen_tasks.append(task)
 
     args.results_path.mkdir(parents=True, exist_ok=True)
 
     dataset = PetDataset(args.dataset_root, args.download_dataset)
 
-    # test of the model executed natively
-    tester = NativeModel(dataset, args.model_path)
-    tester.test_inference(args.results_path, "native", args.test_dataset_fraction)
-
-    # TODO uncomment tests for each implemented class to test its work
-
-    # # test of the model executed with FP32 precision
-    # tester = FP32Model(
-    #     dataset,
-    #     args.results_path / f'{args.model_path.stem}.fp32.tflite',
-    #     args.model_path
-    # )
-    # tester.test_inference(
-    #     args.results_path,
-    #     'tflite-fp32',
-    #     args.test_dataset_fraction
-    # )
-
-    # for calibsize in [0.01, 0.08, 0.3, 0.8]:
-    #     # test of the model executed with INT8 precision
-    #     tester = INT8Model(
-    #         dataset,
-    #         args.results_path / f'{args.model_path.stem}.int8-{calibsize}.tflite',  # noqa: E501
-    #         args.model_path,
-    #         calibsize
-    #     )
-    #     tester.test_inference(
-    #         args.results_path,
-    #         f'tflite-int8-{calibsize}',
-    #         args.test_dataset_fraction
-    #     )
-
-    # # test of the model executed with imbalanced INT8 precision
-    # tester = ImbalancedINT8Model(
-    #     dataset,
-    #     args.results_path / f'{args.model_path.stem}.imbint8.tflite',
-    #     args.model_path
-    # )
-    # tester.test_inference(
-    #     args.results_path,
-    #     'tflite-imbint8',
-    #     args.test_dataset_fraction
-    # )
+    for variant in chosen_tasks:
+        tasks[variant](dataset, args)
