@@ -136,8 +136,10 @@ if __name__ == "__main__":
         )
 
     for calibration_size in [0.01, 0.08, 0.3, 0.8]:
-        tasks[f"tflite-int8-{calibration_size}"] = lambda dataset, args: tflite_int8_X(
-            dataset, args, calibration_size
+        tasks[f"tflite-int8-{calibration_size}"] = (
+            lambda dataset, args, calib_size=calibration_size: tflite_int8_X(
+                dataset, args, calib_size
+            )
         )
 
     def tflite_imbint8(dataset: PetDataset, args: argparse.Namespace):
