@@ -170,6 +170,52 @@ class PrunedModel(TFMOTOptimizedModel):
 
 
 if __name__ == "__main__":
+
+    def tflite_clustered(dataset: PetDataset, args: argparse.Namespace, num_clusters):
+        # test of the clustered models
+        tester = ClusteredModel(
+            dataset,
+            args.results_path
+            / f"{args.model_path.stem}.clustered-{num_clusters}.tflite",  # noqa: E501
+            args.model_path,
+            args.results_path / f"clusterlog-{num_clusters}",
+            num_clusters,
+        )
+        tester.test_inference(
+            args.results_path,
+            f"clustered-{num_clusters}-fp32",
+            args.test_dataset_fraction,
+        )
+
+    def tflite_pruning(dataset: PetDataset, args: argparse.Namespace, sparsity):
+        # test of the model executed with FP32 precision
+        tester = PrunedModel(
+            dataset,
+            args.results_path / f"{args.model_path.stem}.pruned-{sparsity}.tflite",  # noqa: E501
+            args.model_path,
+            args.results_path / f"prunelog-{sparsity}",
+            sparsity,
+        )
+        tester.test_inference(
+            args.results_path, f"pruned-{sparsity}-fp32", args.test_dataset_fraction
+        )
+
+    tasks = {}
+
+    for num_clusters in [2, 4, 8, 16, 32]:
+        tasks[f"clustered-{num_clusters}-fp32"] = (
+            lambda dataset, args, num_clusters=num_clusters: tflite_clustered(
+                dataset, args, num_clusters
+            )
+        )
+
+    for sparsity in [0.2, 0.4, 0.5]:
+        tasks[f"pruned-{sparsity}-fp32"] = (
+            lambda dataset, args, sparsity=sparsity: tflite_pruning(
+                dataset, args, sparsity
+            )
+        )
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--model-path", help="Path to the model file", type=Path)
     parser.add_argument("--dataset-root", help="Path to the dataset file", type=Path)
@@ -185,40 +231,42 @@ if __name__ == "__main__":
         type=float,
         default=1.0,
     )
+    parser.add_argument(
+        "--tasks",
+        choices=list(tasks.keys()) + ["all", "clustered-all", "pruned-all"],
+        nargs="+",
+        default=["all"],
+    )
 
     args = parser.parse_args()
+
+    chosen_tasks = []
+
+    for task in args.tasks:
+        if task == "all":
+            chosen_tasks.extend([t for t in tasks.keys() if t not in chosen_tasks])
+        elif task == "clustered-all":
+            chosen_tasks.extend(
+                [
+                    t
+                    for t in tasks.keys()
+                    if t not in chosen_tasks and t.startswith("clustered")
+                ]
+            )
+        elif task == "pruned-all":
+            chosen_tasks.extend(
+                [
+                    t
+                    for t in tasks.keys()
+                    if t not in chosen_tasks and t.startswith("pruned")
+                ]
+            )
+        elif task not in chosen_tasks:
+            chosen_tasks.append(task)
 
     args.results_path.mkdir(parents=True, exist_ok=True)
 
     dataset = PetDataset(args.dataset_root, args.download_dataset)
 
-    # TODO uncomment once the classes are implemented
-    # for num_clusters in [2, 4, 8, 16, 32]:
-    #     # test of the model executed with FP32 precision
-    #     tester = ClusteredModel(
-    #         dataset,
-    #         args.results_path / f'{args.model_path.stem}.clustered-{num_clusters}.tflite',  # noqa: E501
-    #         args.model_path,
-    #         args.results_path / f'clusterlog-{num_clusters}',
-    #         num_clusters
-    #     )
-    #     tester.test_inference(
-    #         args.results_path,
-    #         f'clustered-{num_clusters}-fp32',
-    #         args.test_dataset_fraction
-    #     )
-
-    # for sparsity in [0.2, 0.4, 0.5]:
-    #     # test of the model executed with FP32 precision
-    #     tester = PrunedModel(
-    #         dataset,
-    #         args.results_path / f'{args.model_path.stem}.pruned-{sparsity}.tflite',  # noqa: E501
-    #         args.model_path,
-    #         args.results_path / f'prunelog-{sparsity}',
-    #         sparsity
-    #     )
-    #     tester.test_inference(
-    #         args.results_path,
-    #         f'pruned-{sparsity}-fp32',
-    #         args.test_dataset_fraction
-    #     )
+    for variant in chosen_tasks:
+        tasks[variant](dataset, args)
