@@ -13,10 +13,7 @@ from nni.compression.pytorch.pruning import ActivationAPoZRankPruner  # noqa: F4
 from nni.compression.pytorch import ModelSpeedup  # noqa: F401
 import shutil
 import time
-from onnx_tf.backend import prepare  # noqa: F401
-import onnx  # noqa: F401
-import tempfile  # noqa: F401
-import tensorflow as tf  # noqa: F401
+import ai_edge_torch  # noqa: F401
 
 # For training use 'cuda', for evaluation purposes use 'cpu'
 DEVICE = "cpu"
@@ -189,20 +186,17 @@ class FashionClassifier(nn.Module):
         # TODO implement
         pass
 
+    def convert_to_tflite(self, outputpath):
+        """
+        Converts model to TFLite format.
 
-def convert_onnx_to_tflite(onnx_file, tflite_file):
-    """
-    Converts the ONNX model to TFLite format.
-
-    Parameters
-    ----------
-    onnx_file: Path
-        Path to the input ONNX file
-    tflite_file: Path
-        Path to the output TFLite file
-    """
-    # TODO implement
-    pass
+        Parameters
+        ----------
+        outputpath: Path
+            Path to the output TFLite file
+        """
+        # TODO implement
+        pass
 
 
 def main():
@@ -387,8 +381,8 @@ def main():
     if args.onnx_model:
         model.convert_to_onnx(args.onnx_model)
 
-    if args.onnx_model and args.tflite_model:
-        convert_onnx_to_tflite(args.onnx_model, args.tflite_model)
+    if args.tflite_model:
+        model.convert_to_litert(args.tflite_model)
 
 
 if __name__ == "__main__":
