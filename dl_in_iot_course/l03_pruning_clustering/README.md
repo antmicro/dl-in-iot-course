@@ -15,37 +15,47 @@ For this task, we will use [TensorFlow Model Optimization Toolkit](https://githu
     * Implement the `prepare_model`, `preprocess_input`, `run_inference` and `postprocess_outputs` methods.
 
       `NOTE:` If you completed the `l02_quantization` tasks, just set the parent class of the `TFMOTOptimizedModel` to `FP32Model` from `dl_in_iot_course.l02_quantization.quantization_experiments` - all methods for preparing a model, running inference and processing inputs and outputs will be reused.
-* `[4pt]` Finish the implementation of the model clustering in `ClusteredModel` class:
+* `[4pt]` Finish the implementation of the model clustering in `ClusteredModel` class. In the `compress_and_fine_tune` method:
 
     * Load the Keras model.
+    * Make the entire model trainable - check out `trainable` parameter.
     * Create a clustered model - use a proper `tfmot` method for adding clustering to model, use `self.num_clusters` to set the number of clusters, use linear centroid initialization.
     * Fine-tune the model - compile and fit the model using `self.optimizer`, `self.loss`, `self.metrics`, `self.traindataset`, `self.epochs`, `self.validdataset` objects created in `optimize_model` method.
+    * Remove (strip) all clustering-related data from the model
     * Convert the model to FP32 TFLite model and save to `self.modelpath`.
-* `[4pt]` Finish the implementation of the model clustering in `PrunedModel` class:
+* `[4pt]` Finish the implementation of the model pruning in `PrunedModel` class:
 
     * The `compress_and_fine_tune` method comes with number of epochs and a simple pruning schedule.
     * Load the Keras model.
     * Create a pruned model - use the `prune_low_magnitude` pruning along with the `sched` schedule.
-    * Fine-tune the model - compile and fit the model using `self.optimizer`, `self.loss`, `self.metrics`, `self.traindataset`, `self.epochs`, `self.validdataset` objects created in `optimize_model` method.
-    * Remember to set up proper callbacks for pruning.
+    * Compile the model using `self.optimizer`, `self.loss`, `self.metrics`, `self.traindataset`, `self.epochs`, `self.validdataset` objects created in `optimize_model` method.
+    * Set up `UpdatePruningStep` (and optionally `PruningSummaries`) callbacks.
+    * Fit the model.
+    * Convert the model to FP32 TFLite model and save to `self.modelpath`.
 
-* In the main script, uncomment all already supported classes and run it (it will definitely take some time):
+* The implemented elements of the task can be executed using:
 
   ```
   python3 -m dl_in_iot_course.l03_pruning_clustering.pruning_clustering_experiments \
         --model-path models/pet-dataset-tensorflow.h5 \
         --dataset-root build/pet-dataset/ \
-        --results-path build/results
+        --results-path build/results --tasks all
   ```
+  Where `--tasks` can be one of:
+  * `all` - run all tests
+  * `clustered-all` - run all clustering tasks
+  * `pruned-all` - run all pruning tasks
+  * `pruned-<level>-fp32` - run specific pruning task (check `--help` for variants)
+  * `clustered-<num_clusters>-fp32` - run specific clustering task (check `--help` for variants)
 
-  In the `build/results` directory, the script will create:
+* In the `build/results` directory, the script will create:
 
-    * `<prefix>-metrics.md` file - contains basic metrics, such as accuracy, precision, sensitivity or G-Mean, along with inference time
-    * `<prefix>-confusion-matrix.png` file - contains visualization of confusion matrix for the model evaluation.
+  * `<prefix>-metrics.md` file - contains basic metrics, such as accuracy, precision, sensitivity or G-Mean, along with inference time
+  * `<prefix>-confusion-matrix.png` file - contains visualization of confusion matrix for the model evaluation.
   Those files will be created for:
 
-    * `clustered-<num_clusters>-fp32` - the clustered model with `num_clusters` clusters.
-    * `pruned-<sparsity>-fp32` - the pruned model.
+  * `clustered-<num_clusters>-fp32` - the clustered model with `num_clusters` clusters.
+  * `pruned-<sparsity>-fp32` - the pruned model.
 
   `NOTE:` To download the dataset, add `--download-dataset` flag.
   The dataset downloaded from the previous task can be reused.
@@ -54,24 +64,24 @@ For this task, we will use [TensorFlow Model Optimization Toolkit](https://githu
 
 * Write a small summary for experiments containing:
 
-    * Performance and quality data for each experiment:
+  * Performance and quality data for each experiment:
 
-        * The computed metrics,
-        * Confusion matrix.
-    * `[2pt]` Write the deflation percentage along with the size of the compressed models with ZIP tool.
-       In the directory containing `.tflite` files, you can run (check [sharkdp/fd](https://github.com/sharkdp/fd) for details):
+    * The computed metrics,
+    * Confusion matrix.
+  * `[2pt]` Write the deflation percentage along with the size of the compressed models with ZIP tool.
+    In the directory containing `.tflite` files, you can run (check [sharkdp/fd](https://github.com/sharkdp/fd) for details):
+    ```
+    fd -t f -e tflite -x zip {.}.zip {}
+    ```
+    `NOTE:` in Singularity/Docker environments the `fd` tool is named `fdfind`.
+  * Answers for the questions:
 
-          fd -t f -e tflite -x zip {.}.zip {}
+    * `[1pt]` In their best variants, how do quantization, pruning and clustering compare to each other (both performance- and quality-wise)?
+    * `[1pt]` How do the sizes of compressed models compare to the size of the TFLite FP32 model (how many times is each of the models smaller than the uncompressed FP32 solution).
+    * `[1pt]` What does deflation means in ZIP tool and how does it correspond to the observed model optimizations?
+    * `[1pt]` Which of the compression methods gives the smallest and best-performing model (is there a dominating solution on both factors)?
 
-      `NOTE:` in Singularity/Docker environments the `fd` tool is named `fdfind`.
-    * Answers for the questions:
-
-        * `[1pt]` In their best variants, how do quantization, pruning and clustering compare to each other (both performance- and quality-wise)?
-        * `[1pt]` How do the sizes of compressed models compare to the size of the TFLite FP32 model (how many times is each of the models smaller than the uncompressed FP32 solution).
-        * `[1pt]` What does deflation means in ZIP tool and how does it correspond to the observed model optimizations?
-        * `[1pt]` Which of the compression methods gives the smallest and best-performing model (is there a dominating solution on both factors)?
-
-  The summary should be put in the project's `summaries` directory - follow the README.md in this directory for details.
+    The summary should be put in the project's `summaries` directory - follow the README.md in this directory for details.
 
 
 `NOTE:` each of the required code snippets should take around 30 lines, but in general less
@@ -87,11 +97,13 @@ Since NNI supports structured pruning mainly in PyTorch, we will switch to this 
 
 ### Tasks
 
-* Read the [structured_pruning script](structured_pruning_experiments.py) thoroughly.
+* Read the [structured_pruning script](structured_pruning_experiments.py) thoroughly - in the beginning of the script there are several "constants" that need to be used later in the script.
 * `NOTE:` You DO NOT NEED to train the model, use the existing model `fashion-mnist-classifier.pth` from `models` directory.
 * [1pt] Create a traced optimizer (check `nni.trace` method), use Adam optimizer with `TRAINING_LEARNING_RATE` (as in training optimizer).
-* [1pt] Formulate the configuration list for the ActivationAPoZRank pruner - we want to prune both 2D convolutions and linear layers.
-* [1pt] What is more, NNI by default prunes ALL layers of given type, even the output ones - EXCLUDE the final linear layer from pruning schedule.
+* [1pt] Formulate the configuration list for the ActivationAPoZRank pruner - we want to prune both 2D convolutions and linear layers:
+  * Use `SPARSITY` (defined in the beginning of the script) total sparsity
+  * Prune `Conv2d` and `Linear` layers
+* [1pt] What is more, NNI by default prunes ALL layers of given type, even the output ones - EXCLUDE the final linear layer from pruning schedule (check name of the layer and add `exclude` entry with given `op_names`).
 * [1pt] Define `ActivationAPoZRank` pruner using the `model`, defined configuration list, `trainer` method, traced optimizer and criterion. Set `training_batches` to 1000. I highly recommend using legacy version of the pruner (documented in [ActivationAPoZRank v2.8](https://nni.readthedocs.io/en/v2.8/reference/compression/pruner.html#activation-apoz-rank-pruner)
 * [1pt] The `pruner.compress()` method will compute the pruning mask, and the additional prints will show the pruning status - Please include logs from terminal for those printouts
 * [2pt] Speedup the model using `ModelSpeedup.speedup_model` function. The expected dummy input for the network should have 1x1x28x28 shape (use `torch.randn(shape).to(model.device)`).
@@ -99,8 +111,11 @@ Since NNI supports structured pruning mainly in PyTorch, we will switch to this 
 
     * Define the optimizer (use Adam with `FINETUNE_LEARNING_RATE`)
     * Train the model using `model.train_model` for `FINE_TUNE_EPOCHS` epochs.
-* [2pt] Implement `convert_to_onnx` method to save the model to ONNX format.
-* [2pt] Implement `convert_onnx_to_tflite` method to convert the ONNX model to FP32 TensorFlow Lite model.
+* [2pt] Implement `convert_to_onnx` method to save the model to ONNX format (`torch` has methods for exporting to ONNX).
+* [2pt] Implement `convert_to_tflite` method to convert the ONNX model to FP32 TensorFlow Lite model.
+  Use `ai_edge_torch` module, or optionally `onnx_tf` to perform `torch->onnx->tflite` conversion.
+  The latter approach won't work for recent releases of TensorFlow.
+  It is also possible to try out `onnx2tf` - the provided `requirements.txt` and Docker image do not provide dependencies for this, but it is possible to try out.
 * [1pt] Use [Netron](https://github.com/lutzroeder/netron) tool to visualize the network
 * In summary:
     * [1pt] Include the shape of the model before pruning (script logs provide those, as well as other data), along with its accuracy and inference time
