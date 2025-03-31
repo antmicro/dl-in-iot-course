@@ -1,6 +1,8 @@
+ai-edge-litert
+ai-edge-torch
 apache-tvm
 matplotlib
-nni
+nni==2.9
 numpy
 onnx
 onnx_tf
@@ -9,9 +11,9 @@ scikit_learn
 tensorflow
 tensorflow-model-optimization
 tensorflow-probability
+tf-keras
 tflite
 torch
 torchvision
 tqdm
-ai-edge-litert
 xgboost==1.7.6
