@@ -99,33 +99,33 @@ Since NNI supports structured pruning mainly in PyTorch, we will switch to this 
 
 * Read the [structured_pruning script](structured_pruning_experiments.py) thoroughly - in the beginning of the script there are several "constants" that need to be used later in the script.
 * `NOTE:` You DO NOT NEED to train the model, use the existing model `fashion-mnist-classifier.pth` from `models` directory.
-* [1pt] Create a traced optimizer (check `nni.trace` method), use Adam optimizer with `TRAINING_LEARNING_RATE` (as in training optimizer).
-* [1pt] Formulate the configuration list for the ActivationAPoZRank pruner - we want to prune both 2D convolutions and linear layers:
+* `[1pt]` Create a traced optimizer (check `nni.trace` method), use Adam optimizer with `TRAINING_LEARNING_RATE` (as in training optimizer).
+* `[1pt]` Formulate the configuration list for the ActivationAPoZRank pruner - we want to prune both 2D convolutions and linear layers:
   * Use `SPARSITY` (defined in the beginning of the script) total sparsity
   * Prune `Conv2d` and `Linear` layers
-* [1pt] What is more, NNI by default prunes ALL layers of given type, even the output ones - EXCLUDE the final linear layer from pruning schedule (check name of the layer and add `exclude` entry with given `op_names`).
-* [1pt] Define `ActivationAPoZRank` pruner using the `model`, defined configuration list, `trainer` method, traced optimizer and criterion. Set `training_batches` to 1000. I highly recommend using legacy version of the pruner (documented in [ActivationAPoZRank v2.8](https://nni.readthedocs.io/en/v2.8/reference/compression/pruner.html#activation-apoz-rank-pruner)
-* [1pt] The `pruner.compress()` method will compute the pruning mask, and the additional prints will show the pruning status - Please include logs from terminal for those printouts
-* [2pt] Speedup the model using `ModelSpeedup.speedup_model` function. The expected dummy input for the network should have 1x1x28x28 shape (use `torch.randn(shape).to(model.device)`).
-* [3pt] Fine-tune the model:
+* `[1pt]` What is more, NNI by default prunes ALL layers of given type, even the output ones - EXCLUDE the final linear layer from pruning schedule (check name of the layer and add `exclude` entry with given `op_names`).
+* `[1pt]` Define `ActivationAPoZRank` (or other activation-based) pruner using the `model`, defined configuration list, `trainer` method, traced optimizer and criterion. Set `training_batches` to 1000. I highly recommend using legacy version of the pruner (documented in [ActivationAPoZRank v2.8](https://nni.readthedocs.io/en/v2.8/reference/compression/pruner.html#activation-apoz-rank-pruner)
+* `[1pt]` The `pruner.compress()` method will compute the pruning mask, and the additional prints will show the pruning status - Please include logs from terminal for those printouts
+* `[2pt]` Speedup the model using `ModelSpeedup.speedup_model` function. The expected dummy input for the network should have 1x1x28x28 shape (use `torch.randn(shape).to(model.device)`).
+* `[3pt]` Fine-tune the model:
 
     * Define the optimizer (use Adam with `FINETUNE_LEARNING_RATE`)
     * Train the model using `model.train_model` for `FINE_TUNE_EPOCHS` epochs.
-* [2pt] Implement `convert_to_onnx` method to save the model to ONNX format (`torch` has methods for exporting to ONNX).
-* [2pt] Implement `convert_to_tflite` method to convert the ONNX model to FP32 TensorFlow Lite model.
+* `[2pt]` Implement `convert_to_onnx` method to save the model to ONNX format (`torch` has methods for exporting to ONNX).
+* `[2pt]` Implement `convert_to_tflite` method to convert the ONNX model to FP32 TensorFlow Lite model.
   Use `ai_edge_torch` module, or optionally `onnx_tf` to perform `torch->onnx->tflite` conversion.
   The latter approach won't work for recent releases of TensorFlow.
   It is also possible to try out `onnx2tf` - the provided `requirements.txt` and Docker image do not provide dependencies for this, but it is possible to try out.
-* [1pt] Use [Netron](https://github.com/lutzroeder/netron) tool to visualize the network
+* `[1pt]` Use [Netron](https://github.com/lutzroeder/netron) tool to visualize the network
 * In summary:
-    * [1pt] Include the shape of the model before pruning (script logs provide those, as well as other data), along with its accuracy and inference time
-    * [1pt] Include the pruning logs collected around `pruning.compress()`
-    * [1pt] Include the shape of the model after pruning, along with its accuracy and inference time before fine-tuning
-    * [1pt] Include the accuracy and inference time of the model after fine-tuning
-    * [1pt] Include the fine-tuned PyTorch model in the summary directory (use Git LFS, check `git lfs install`, `git lfs track` commands, you need to apply them before adding the file and committing it)
-    * [1pt] Include the ONNX file with pruned PyTorch model (use Git LFS)
-    * [1pt] Include the TFLite file with pruned PyTorch model (use Git LFS)
-    * [1pt] In the summary, include the visualization of the graph using Netron
+    * `[1pt]` Include the shape of the model before pruning (script logs provide those, as well as other data), along with its accuracy and inference time
+    * `[1pt]` Include the pruning logs collected around `pruning.compress()`
+    * `[1pt]` Include the shape of the model after pruning, along with its accuracy and inference time before fine-tuning
+    * `[1pt]` Include the accuracy and inference time of the model after fine-tuning
+    * `[1pt]` Include the fine-tuned PyTorch model in the summary directory (use Git LFS, check `git lfs install`, `git lfs track` commands, you need to apply them before adding the file and committing it)
+    * `[1pt]` Include the ONNX file with pruned PyTorch model (use Git LFS)
+    * `[1pt]` Include the TFLite file with pruned PyTorch model (use Git LFS)
+    * `[1pt]` In the summary, include the visualization of the graph using Netron
 
 The command should be executed more or less as follows:
 
@@ -147,7 +147,7 @@ Additional factors:
 
 * [TensorFlow Model Optimization Pruning documentation](https://www.tensorflow.org/model_optimization/guide/pruning)
 * [TensorFlow Model Optimization Clustering documentation](https://www.tensorflow.org/model_optimization/guide/clustering)
-* [NNI documentation](https://nni.readthedocs.io/en/stable/)
-* [NNI Model Compression documentation](https://nni.readthedocs.io/en/stable/compression/overview.html)
-* [NNI Pruning quickstart](https://nni.readthedocs.io/en/stable/tutorials/pruning_quick_start_mnist.html)
+* [NNI documentation](https://nni.readthedocs.io/en/v2.8/)
+* [NNI Model Compression documentation](https://nni.readthedocs.io/en/v2.8/compression/overview.html)
+* [NNI Pruning quickstart](https://nni.readthedocs.io/en/v2.8/tutorials/pruning_quick_start_mnist.html)
 * [Activation APoZ Rank Pruner doc](https://nni.readthedocs.io/en/v2.8/reference/compression/pruner.html#activation-apoz-rank-pruner)
