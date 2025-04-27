@@ -129,12 +129,21 @@ In the UART console, run person detection demo implemented in TFLite Micro runni
 IF Golden tests finish with:
 
 ```
+Perf counters not enabled.
+   123M (    122659133 )  cycles total
+Tracked cycles: 0
 OK  Golden tests passed
 ```
 
-It means that everything is implemented correctly.
+It means that everything is implemented correctly:
+
+* `Perf counters not enabled.` - this is present since hardware performance counters are not available.
+* `123M ( 122659133)  cycles total` - number of cycles spent on entire model execution
+* `Tracked cycles: 0` - number of cycles tracked using soon-to-be-introduced `perf_counter` variable from `perf.h` header
 
 To quit the simulation, run `quit` command in the main Renode console.
+
+`NOTE`: If font in GUI terminals is too small, within Docker image head to `/root/.config/renode/config` file (e.g. using `vim` or `nano`) and modify `font-size`, `window-width` and `window-height` to desired settings (e.g. `20`, `1920` and `1080`, respectively).
 
 `NOTE`: In case the GUI applications do not appear, please check [Running simulation without access to GUI application](#running-simulation-without-access-to-gui-application).
 
@@ -166,6 +175,14 @@ After:
 ```
 
 This file adds some functions and global variables for profiling number of CPU cycles used to compute functions.
+
+Let's focus on `ConvPerChannel` method described as:
+
+```cpp
+// Fixed-point per-channel-quantization convolution reference kernel.
+```
+
+`NOTE`: Please bear in mind that there are two `ConvPerChannel` implementations, for different data types - we focus on the first one.
 
 After this, locate the innermost loop of the convolution implementation - it should look something like this:
 
@@ -206,7 +223,16 @@ make renode | tee initial-profiling.txt
 ```
 
 and run golden tests for person detection to collect data.
-Over 60% of cycles are part of this innermost loop, which gives some opportunity for optimizations.
+
+Each test should end up with something like:
+
+```
+Perf counters not enabled.
+   130M (    130468560 )  cycles total
+Tracked cycles: 82259484
+```
+
+Over 60% of cycles are part of this innermost loop - let's try to optimize it.
 
 * `[5pt]` Commit changes in the project and `initial-profiling.txt` log
 
@@ -227,12 +253,12 @@ line to the beginning of `ConvPerChannel` function.
 
 Run:
 
-
 ```bash
 make renode | tee conv2d-analysis.txt
 ```
 
 * `[3pt]` Include changes and log file in the commit
+* Remove above `print_conv_params` for following tasks, as we do not need this analysis to be executed anymore
 
 As it can be seen, we have some constant parameters:
 
@@ -529,7 +555,7 @@ for (int out_channel = 0; out_channel < output_depth; ++out_channel) {
 }
 ```
 
-`NOTE:` You also need to remove/comment out the `dilation_width_factor`, `dilation_height_factor`, `filters_height`, `filters_width`, `filters_per_group` variables.
+`NOTE:` You also need to remove/comment out the `dilation_width_factor`, `dilation_height_factor`, `filter_height`, `filter_width`, `input_offset`, `filters_per_group` variables.
 
 As can be observed, we need to reset accumulator and shift certain operations.
 The unrolled loops are replaced with `cfu_op0` operations.
