@@ -73,6 +73,7 @@ RUN apt-get update && $INST \
     wget \
     xxd \
     xz-utils \
+    yosys \
     zip \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
