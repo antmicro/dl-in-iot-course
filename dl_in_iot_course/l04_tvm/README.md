@@ -92,10 +92,13 @@ Additional factors:
 
 ## Resources
 
-* [tvm.target](https://tvm.apache.org/docs/reference/api/python/target.html)
-* [TVM tutorials for compiling DNN models](https://tvm.apache.org/docs/how_to/compile_models/index.html)
-* [TVM Python API](https://tvm.apache.org/docs/reference/api/python/index.html)
-* [tvm.relay.frontend](https://tvm.apache.org/docs/reference/api/python/relay/frontend.html)
-* [tvm.relay.transform](https://tvm.apache.org/docs/reference/api/python/relay/transform.html)
-* [tvm.contrib.graph_executor](https://tvm.apache.org/docs/reference/api/python/graph_executor.html)
-* [tvm.contrib.graph_executor.GraphModule](https://tvm.apache.org/docs/reference/api/python/graph_executor.html?highlight=get_output#tvm.contrib.graph_executor.GraphModule)
+* `tvm.target`
+    * [Wayback URL](https://web.archive.org/web/20240424002954/https://tvm.apache.org/docs/reference/api/python/target.html)
+    * https://github.com/apache/tvm/blob/v0.14.0/python/tvm/target/__init__.py
+    * https://github.com/apache/tvm/blob/v0.14.0/python/tvm/target/target.py
+* [TVM tutorials for compiling DNN models](https://github.com/apache/tvm/tree/v0.14.0/gallery/how_to/compile_models) ([Wayback URL](https://web.archive.org/web/20240423230942/https://tvm.apache.org/docs/how_to/compile_models/index.html))
+* [TVM Python API (Wayback Machine for 0.17)](https://web.archive.org/web/20240518232529/https://tvm.apache.org/docs/reference/api/python/index.html)
+* [tvm.relay.frontend (Wayback Machine for 0.17)](https://web.archive.org/web/20240715203547/https://tvm.apache.org/docs/reference/api/python/relay/frontend.html)
+* [tvm.relay.transform (Wayback Machine for 0.17)](https://web.archive.org/web/20240812102933/https://tvm.apache.org/docs/reference/api/python/relay/transform.html)
+* [tvm.contrib.graph_executor (Wayback Machine for 0.17)](https://web.archive.org/web/20240816214114/https://tvm.apache.org/docs/reference/api/python/graph_executor.html)
+* [tvm.contrib.graph_executor.GraphModule (Wayback Machine for 0.17)](https://web.archive.org/web/20240816214114/https://tvm.apache.org/docs/reference/api/python/graph_executor.html#tvm.contrib.graph_executor.GraphModule)
