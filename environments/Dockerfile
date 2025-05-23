@@ -78,7 +78,7 @@ RUN apt-get update && $INST \
     && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN rm /usr/lib/python3.11/EXTERNALLY-MANAGED
-RUN $PIPINST pip setuptools PyYAML cmake flit_core
+RUN $PIPINST pip setuptools PyYAML cmake==3.21.0 flit_core
 
 RUN $PIPINST \
     amaranth-yosys \
