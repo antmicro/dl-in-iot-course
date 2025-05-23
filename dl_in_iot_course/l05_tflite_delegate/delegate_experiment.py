@@ -4,8 +4,8 @@ from pathlib import Path
 from tqdm import tqdm
 import numpy as np
 from numpy.testing import assert_almost_equal
-import onnx  # noqa: F401
-from onnx_tf.backend import prepare  # noqa: F401
+
+from onnx2tf import convert  # noqa: F401
 
 
 def convert_onnx_to_tensorflow(onnxpath: Path, tfpath: Path):

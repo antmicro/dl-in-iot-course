@@ -7,8 +7,10 @@ The aim of this laboratory is to enhance a simple TensorFlow Lite delegate.
 * Check the [delegate-example](../../delegate-example) subdirectory - go through the CMakeLists.txt and sources.
 * Build the delegate example based on delegate's README.md.
 * Check the [delegate_experiment script](delegate_experiment.py).
-* `[1pt]` Implement `convert_onnx_to_tensorflow` method - it should use `onnx` module and `prepare` method from `onnx_tf.backend` submodule.
+* `[1pt]` Implement `convert_onnx_to_tensorflow` method - it should use `onnx2tf.convert` method.
+  Yielded model can be saved using `save` method.
 * `[1pt]` Implement `convert_to_tflite` method - it should load the model saved to file in `convert_onnx_to_tensorflow`.
+  One method to load can be `tf.keras.models.load_model`, depending on used format.
 * `[1pt]` Add loading delegate in the delegate_experiment - use `--delegate-path` argument.
 * Run the test script using `models/test-delegate-two-inputs.onnx` model, i.e.:
 
