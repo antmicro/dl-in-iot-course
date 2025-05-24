@@ -19,3 +19,5 @@ xgboost==1.7.6
 onnx2tf
 onnx-graphsurgeon
 sng4onnx
+onnxsim
+onnxruntime
